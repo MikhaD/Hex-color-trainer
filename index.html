@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="style.css">
+	<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+	<script src="JS/setup.js" defer></script>
+	<script src="JS/game.js" defer></script>
+	<title>Color Game</title>
+</head>
+<body>
+	<header>
+		<h1 class="text" id="title">GUESS THE HEX</h1>
+		<label for="logo-check">
+			<input id="logo-check" type="checkbox">
+			<svg id="logo" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" tabindex="0">
+				<path class="cog" fill-rule="evenodd" d="M53.706 0h-7.41l-2.085 5.537-5.878 1.17-4.044-4.32-6.845 2.835.192 5.914-4.983 3.33-5.39-2.443-5.24 5.24 2.44 5.4-3.33 4.983-5.913-.195L2.4 34.287l4.318 4.046-1.17 5.878-5.538 2.083v7.41l5.537 2.085 1.17 5.878L2.4 65.713l2.835 6.845 5.913-.195 3.33 4.983-2.44 5.4 5.24 5.24 5.39-2.443 4.983 3.33-.192 5.914 6.845 2.835 4.044-4.32 5.878 1.17L46.297 100h7.41l2.083-5.538 5.878-1.17 4.046 4.318 6.845-2.835-.195-5.913 4.983-3.33 5.4 2.44 5.24-5.24-2.443-5.39 3.33-4.983 5.914.192 2.835-6.845-4.32-4.044 1.17-5.878L100 53.703v-7.41l-5.538-2.083-1.17-5.878 4.32-4.044-2.835-6.845-5.914.192-3.33-4.983 2.443-5.39-5.24-5.24-5.4 2.44-4.983-3.33.195-5.913-6.845-2.835-4.046 4.318-5.878-1.17L53.706 0zM50 83.213c18.343 0 33.214-14.87 33.214-33.213S68.344 16.787 50 16.787 16.787 31.657 16.787 50 31.657 83.213 50 83.213z" fill="#000"/>
+				<path class="cutout" d="M71.283 40.822c6.196 4.55 6.196 13.806 0 18.356L-1.69 112.77V-12.77l72.973 53.593z" fill="#fff"/>
+				<path class="m" d="M37.145 24.086H47.35v51.828h-7.03v-40.58l-12.873 40.58-12.874-40.58v40.58H7.54V24.086h10.205l9.7 31.977 9.7-31.977z" fill="#000"/>
+			</svg>
+		</label>
+		</header>
+		<aside id="settings" open="false">
+			<section class="setting">
+				<h2 class="text">Guess</h2>
+				<form class="setting-options" name="guesses">
+					<input type="radio" name="guess" id="guess-hex" value="hex" checked>
+					<label class="setting-option guess" for="guess-hex">HEX</label>
+					<input type="radio" name="guess" id="guess-rgb" value="rgb">
+					<label class="setting-option guess" for="guess-rgb">RGB</label>
+					<input type="radio" name="guess" id="guess-hsl" value="hsl">
+					<label class="setting-option guess" for="guess-hsl">HSL</label>
+					<input type="radio" name="guess" id="guess-color" value="color" disabled>
+					<label class="setting-option guess" for="guess-color">COLOR</label>
+				</form>
+			</section>
+			<section class="setting">
+				<h2 class="text">Given</h2>
+				<form class="setting-options" name="givens">
+					<input type="radio" name="given" id="given-hex" value="hex" disabled>
+					<label class="setting-option given" for="given-hex">HEX</label>
+					<input type="radio" name="given" id="given-rgb" value="rgb">
+					<label class="setting-option given" for="given-rgb">RGB</label>
+					<input type="radio" name="given" id="given-hsl" value="hsl">
+					<label class="setting-option given" for="given-hsl">HSL</label>
+					<input type="radio" name="given" id="given-color" value="color" checked>
+					<label class="setting-option given" for="given-color">COLOR</label>
+				</form>
+			</section>
+			<section class="setting">
+				<h2 class="text">Game Mode</h2>
+				<form class="setting-options" name="modes">
+					<input type="radio" name="gameMode" id="speed" value="speed">
+					<label class="setting-option" for="speed">Speed</label>
+					<input type="radio" name="gameMode" id="timed" value="timed" checked>
+					<label class="setting-option" for="timed">Timed</label>
+					<input type="radio" name="gameMode" id="endless" value="endless">
+					<label class="setting-option" for="endless">Endless</label>
+					<input type="radio" name="gameMode" id="zen" value="zen">
+					<label class="setting-option" for="zen">Zen</label>
+				</form>
+			</section>
+			<section class="setting">
+				<h2 class="text">Difficulty</h2>
+				<form class="setting-options" name="difficulty">
+					<input type="radio" name="difficulty" id="0" value="0">
+					<label class="setting-option" for="0">0</label>
+					<input type="radio" name="difficulty" id="1" value="1" checked>
+					<label class="setting-option" for="1">1</label>
+					<input type="radio" name="difficulty" id="2" value="2">
+					<label class="setting-option" for="2">2</label>
+					<input type="radio" name="difficulty" id="3" value="3">
+					<label class="setting-option" for="3">3</label>
+					<input type="radio" name="difficulty" id="4" value="4">
+					<label class="setting-option" for="4">4</label>
+					<input type="radio" name="difficulty" id="5" value="5">
+					<label class="setting-option" for="5">5</label>
+				</form>
+			</section>
+			<section class="setting" id="time">
+				<h2 class="text">Time</h2>
+				<div class="setting-options" name="time">
+					<input type="number" name="minutes" class="text input" id="minutes" placeholder="minutes" max="10" min="0" value="1">
+					<input type="number" name="seconds" class="text input" id="seconds" placeholder="seconds" max="59" min="0" value="0">
+				</div>
+			</section>
+			<section class="setting" id="questions">
+				<h2 class="text">Number of Questions</h2>
+				<div name="num-questions">
+					<input type="number" name="questions" class="text input" placeholder="questions" max="1000" min="1" value="10">
+				</div>
+			</section>
+		</aside>
+		<main>
+			<section id="controls">
+				<div id="guess-box"></div>
+				<div id="control-box">
+					<button class="text" id="start">START</button>
+					<span class="mono-text" id="timer">00:00:00</span>
+					<div id="progress">
+						<span class="mono-text" id="counter">00/00</span>
+						<span class="mono-text" id="right">0</span>
+						<span class="mono-text" id="wrong">0</span>
+					</div>
+				</div>
+			</section>
+			<section id="options">
+				<button class="mono-text"></button>
+				<button class="mono-text"></button>
+				<button class="mono-text"></button>
+				<button class="mono-text"></button>
+				<button class="mono-text"></button>
+				<button class="mono-text"></button>
+				<button class="mono-text"></button>
+				<button class="mono-text"></button>
+				<button class="mono-text"></button>
+			</section>
+		</main>
+	</body>
+</html>

@@ -1,0 +1,270 @@
+* {
+	margin: 0;
+	border: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+:root {
+	font-size: 62.5%;
+	font-family: sans-serif;
+	--header-height: 8rem;
+	--padding: 1rem;
+	--header-element: calc(var(--header-height) - 2*var(--padding));
+	--settings-width: 50rem;
+	--box-shadow-opacity: 50%;
+	--over: #F8F8F8;
+	--right: #00a000;
+	--wrong: #b40000;
+}
+
+button {
+	all: unset;
+	text-align: center;
+	cursor: pointer;
+}
+
+body {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+header {
+	display: flex;
+	justify-content: space-between;
+	padding: 1rem;
+	height: var(--header-height);
+}
+
+.mono-text {
+	font-family: Courier;
+	display: inline-flex;
+	font-weight: 600;
+	justify-content: center;
+	align-items: center;
+}
+
+.text {
+	font-family: Helvetica;
+}
+
+#title {
+	font-size: var(--header-element);
+	margin: auto;
+	background: linear-gradient(90deg, red, orange, yellow, green, royalblue, darkmagenta,violet);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+
+}
+
+#logo {
+	height: var(--header-element);
+	width: var(--header-element);
+	cursor: pointer;
+	outline: none;
+}
+
+input[type="checkbox"], input[type="radio"] {
+	display: none;
+}
+
+.cog {
+	transition: transform 0.8s ease-in-out;
+	transform-origin: center;
+	transform-box: fill-box;
+}
+
+input[type="checkbox"]:checked ~ #logo .cog {
+	transform: rotate(180deg);
+}
+
+main {
+	flex-grow: 1;
+	display: grid;
+	grid-template-columns: 5fr 8fr;
+}
+
+#settings {
+	width: 0;
+	transition: width 0.8s ease-in-out;
+	background: var(--over);
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, var(--box-shadow-opacity));
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	top: var(--header-height);
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow: hidden;
+}
+
+#settings[open="true"] { width: var(--settings-width) }
+
+.setting {
+	display: block;
+	width: 100%;
+	padding: 2rem 4rem 1rem 4rem;
+	opacity: 0;
+	text-align: center;
+	transition: opacity 0.8s ease-in-out;
+}
+
+#settings[open="true"] .setting { opacity: 100% }
+
+h2 {
+	white-space: nowrap;
+	overflow: hidden;
+	font-size: 2rem;
+	margin-bottom: 0.5rem;
+}
+
+.setting-options {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	transition: opacity 0.5s linear;
+}
+
+.setting-options[name="difficulty"] {grid-template-columns: repeat(6, 1fr)}
+
+.setting-options[name="time"] {
+	grid-template-columns: repeat(2, 1fr);
+	column-gap: 2rem;
+}
+
+.setting-option {
+	height: 3rem;
+	padding: 0.7rem;
+	font-size: 1.5rem;
+	background: linear-gradient(#DDD, #FFF, #DDD);
+	transition: all 0.1s linear;
+}
+
+
+input[type="radio"]:checked + .setting-option {
+	background: linear-gradient(#FFF, #DDD, #FFF);
+	box-shadow: inset 1px 1px 3px #0008;
+}
+
+.input {
+	box-shadow: inset 1px 1px 3px #0008;
+	width: 100%;
+	height: 3rem;
+	text-align: center;
+}
+
+.input:focus {outline: #83169B auto 1px}
+
+#controls {
+	margin: 1rem;
+	display: grid;
+	gap: 1rem;
+	grid-template-rows: 1fr 2fr;
+}
+
+#guess-box {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 1.5rem solid black;
+	border-radius: 0.25rem;
+}
+
+#control-box {
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+}
+
+#start {
+	font-size: 2.5rem;
+	color: #FFF;
+	background: #83169B;
+	font-weight: 700;
+	border-radius: 0.25rem;
+	transition: all 0.08s linear;
+}
+
+#start:hover {
+	font-size: 2.7rem;
+	filter: hue-rotate(10deg);
+}
+
+#start:active {
+	font-size: 2.3rem;
+	margin: 0.5rem;
+}
+
+#timer {
+	display: none;
+	font-size: 10rem;
+	font-weight: 600;
+}
+
+#progress {
+	display: grid;
+	font-size: 3rem;
+	grid-template-rows: 2fr 1fr;
+	grid-template-columns: 1fr 1fr;
+}
+
+#right {
+	background-color: var(--right);
+	color: #FFF;
+}
+
+#wrong {
+	background-color: var(--wrong);
+	color: #FFF;
+}
+
+#counter {
+	font-size: 7rem;
+	grid-column: 1/3;
+}
+
+#options {
+	display: inherit;
+	padding: var(--padding);
+	gap: 1rem;
+	grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+}
+
+#options button {
+	margin: 0rem;
+	background: var(--over);
+	box-shadow: 2px 2px 4px rgba(0, 0, 0, var(--box-shadow-opacity));
+	transition: margin 0.05s linear;
+}
+
+#options button:active {
+	margin: 0.5rem;
+}
+
+.hidden {
+	display: none;
+}
+
+@media(max-width: 900px) {
+	main {
+		grid-template: 5fr 8fr / 1fr;
+	}
+	:root {
+		--settings-width: 100%;
+	}
+	#guess-box {
+		border-width: 0.8rem;
+	}
+	#timer {
+		font-size: 5rem;
+	}
+	#counter {
+		font-size: 3rem;
+	}
+	.mono-text {
+		font-size: 1.8rem;
+	}
+}
