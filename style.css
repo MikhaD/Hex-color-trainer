@@ -13,9 +13,11 @@
 	--header-element: calc(var(--header-height) - 2*var(--padding));
 	--settings-width: 50rem;
 	--box-shadow-opacity: 50%;
+	--foreground: #000000;
 	--over: #F8F8F8;
 	--right: #00a000;
 	--wrong: #b40000;
+	--accent: #83169B;
 }
 
 button {
@@ -48,6 +50,7 @@ header {
 
 .text {
 	font-family: Helvetica;
+	color: var(--foreground);
 }
 
 #title {
@@ -78,7 +81,7 @@ input[type="checkbox"], input[type="radio"] {
 }
 
 input[type="checkbox"]:checked ~ #logo .cog {
-	transform: rotate(180deg);
+	transform: rotate(135deg);
 }
 
 main {
@@ -125,16 +128,11 @@ h2 {
 
 .setting-options {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 	transition: opacity 0.5s linear;
 }
 
-.setting-options[name="difficulty"] {grid-template-columns: repeat(6, 1fr)}
-
-.setting-options[name="time"] {
-	grid-template-columns: repeat(2, 1fr);
-	column-gap: 2rem;
-}
+.setting-options[name="time"] {column-gap: 2rem}
 
 .setting-option {
 	height: 3rem;
@@ -157,7 +155,19 @@ input[type="radio"]:checked + .setting-option {
 	text-align: center;
 }
 
-.input:focus {outline: #83169B auto 1px}
+.input:focus {outline: var(--accent) auto 1px}
+
+#signiture {
+	font-size: 1.2rem;
+	position: absolute;
+	bottom: 1rem;
+	white-space: nowrap;
+	overflow: hidden;
+	opacity: 0;
+	transition: opacity 0.8s ease-in-out;
+}
+
+#settings[open="true"] #signiture { opacity: 100% }
 
 #controls {
 	margin: 1rem;
@@ -172,6 +182,9 @@ input[type="radio"]:checked + .setting-option {
 	align-items: center;
 	border: 1.5rem solid black;
 	border-radius: 0.25rem;
+	font-size: 3rem;
+	color: var(--foreground);
+	transition: all 0.1s linear;
 }
 
 #control-box {
@@ -182,7 +195,7 @@ input[type="radio"]:checked + .setting-option {
 #start {
 	font-size: 2.5rem;
 	color: #FFF;
-	background: #83169B;
+	background: var(--accent);
 	font-weight: 700;
 	border-radius: 0.25rem;
 	transition: all 0.08s linear;
@@ -199,8 +212,7 @@ input[type="radio"]:checked + .setting-option {
 }
 
 #timer {
-	display: none;
-	font-size: 10rem;
+	font-size: 7rem;
 	font-weight: 600;
 }
 
@@ -216,13 +228,23 @@ input[type="radio"]:checked + .setting-option {
 	color: #FFF;
 }
 
+.right {
+	outline: 1rem solid var(--right);
+	outline-offset: -1rem;
+}
+
 #wrong {
 	background-color: var(--wrong);
 	color: #FFF;
 }
 
+.wrong {
+	outline: 1rem solid var(--wrong);
+	outline-offset: -1rem;
+}
+
 #counter {
-	font-size: 7rem;
+	font-size: 5rem;
 	grid-column: 1/3;
 }
 
@@ -237,11 +259,16 @@ input[type="radio"]:checked + .setting-option {
 	margin: 0rem;
 	background: var(--over);
 	box-shadow: 2px 2px 4px rgba(0, 0, 0, var(--box-shadow-opacity));
-	transition: margin 0.05s linear;
+	transition: all 0.1s linear;
+	border-radius: 0.25rem;
+	font-size: 2rem;
+	font-weight: 600;
+	color: var(--foreground);
 }
 
 #options button:active {
 	margin: 0.5rem;
+	font-size: 1.9rem;
 }
 
 .hidden {
@@ -249,22 +276,20 @@ input[type="radio"]:checked + .setting-option {
 }
 
 @media(max-width: 900px) {
-	main {
-		grid-template: 5fr 8fr / 1fr;
-	}
-	:root {
-		--settings-width: 100%;
-	}
-	#guess-box {
-		border-width: 0.8rem;
-	}
-	#timer {
-		font-size: 5rem;
-	}
-	#counter {
-		font-size: 3rem;
-	}
-	.mono-text {
-		font-size: 1.8rem;
-	}
+	main { grid-template: 5fr 8fr / 1fr }
+	:root { --settings-width: 100% }
+	#guess-box { border-width: 0.8rem }
+	#timer { font-size: 5rem }
+	#counter { font-size: 3rem }
+	#options button { font-size: 1.6rem }
+	#options button:active { font-size: 1.5rem }
+	.mono-text { font-size: 1.8rem }
+}
+@media(max-width: 470px) {
+	#options button { font-size: 1.3rem }
+	#options button:active { font-size: 1.2rem }
+}
+@media(max-width: 400px) {
+	#options button { font-size: 1.1rem }
+	#options button:active { font-size: 1rem }
 }

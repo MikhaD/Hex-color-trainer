@@ -8,7 +8,7 @@
 	<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
 	<script src="JS/setup.js" defer></script>
 	<script src="JS/game.js" defer></script>
-	<title>Color Game</title>
+	<title>GUESS THE HEX</title>
 </head>
 <body>
 	<header>
@@ -32,14 +32,14 @@
 					<label class="setting-option guess" for="guess-rgb">RGB</label>
 					<input type="radio" name="guess" id="guess-hsl" value="hsl">
 					<label class="setting-option guess" for="guess-hsl">HSL</label>
-					<input type="radio" name="guess" id="guess-color" value="color" disabled>
+					<input type="radio" name="guess" id="guess-color" value="color">
 					<label class="setting-option guess" for="guess-color">COLOR</label>
 				</form>
 			</section>
 			<section class="setting">
 				<h2 class="text">Given</h2>
 				<form class="setting-options" name="givens">
-					<input type="radio" name="given" id="given-hex" value="hex" disabled>
+					<input type="radio" name="given" id="given-hex" value="hex">
 					<label class="setting-option given" for="given-hex">HEX</label>
 					<input type="radio" name="given" id="given-rgb" value="rgb">
 					<label class="setting-option given" for="given-rgb">RGB</label>
@@ -56,17 +56,15 @@
 					<label class="setting-option" for="speed">Speed</label>
 					<input type="radio" name="gameMode" id="timed" value="timed" checked>
 					<label class="setting-option" for="timed">Timed</label>
-					<input type="radio" name="gameMode" id="endless" value="endless">
-					<label class="setting-option" for="endless">Endless</label>
 					<input type="radio" name="gameMode" id="zen" value="zen">
 					<label class="setting-option" for="zen">Zen</label>
+					<input type="radio" name="gameMode" id="endless" value="endless">
+					<label class="setting-option" for="endless">Endless</label>
 				</form>
 			</section>
 			<section class="setting">
 				<h2 class="text">Difficulty</h2>
 				<form class="setting-options" name="difficulty">
-					<input type="radio" name="difficulty" id="0" value="0">
-					<label class="setting-option" for="0">0</label>
 					<input type="radio" name="difficulty" id="1" value="1" checked>
 					<label class="setting-option" for="1">1</label>
 					<input type="radio" name="difficulty" id="2" value="2">
@@ -77,45 +75,48 @@
 					<label class="setting-option" for="4">4</label>
 					<input type="radio" name="difficulty" id="5" value="5">
 					<label class="setting-option" for="5">5</label>
+					<input type="radio" name="difficulty" id="6" value="6">
+					<label class="setting-option" for="6">6</label>
 				</form>
 			</section>
-			<section class="setting" id="time">
+			<section class="setting hidden" id="time">
 				<h2 class="text">Time</h2>
-				<div class="setting-options" name="time">
+				<form class="setting-options" name="time">
 					<input type="number" name="minutes" class="text input" id="minutes" placeholder="minutes" max="10" min="0" value="1">
 					<input type="number" name="seconds" class="text input" id="seconds" placeholder="seconds" max="59" min="0" value="0">
-				</div>
+				</form>
 			</section>
 			<section class="setting" id="questions">
 				<h2 class="text">Number of Questions</h2>
-				<div name="num-questions">
-					<input type="number" name="questions" class="text input" placeholder="questions" max="1000" min="1" value="10">
-				</div>
+				<form name="numQuestions">
+					<input type="number" name="questions" class="text input" placeholder="questions" max="999" min="1" value="10">
+				</form>
 			</section>
+			<p class="text" id="signiture">Created by MikhaD</p>
 		</aside>
 		<main>
 			<section id="controls">
-				<div id="guess-box"></div>
+				<div class="text" id="guess-box"></div>
 				<div id="control-box">
 					<button class="text" id="start">START</button>
-					<span class="mono-text" id="timer">00:00:00</span>
+					<span class="mono-text hidden" id="timer"><!-- 00:00:00 --></span>
 					<div id="progress">
-						<span class="mono-text" id="counter">00/00</span>
-						<span class="mono-text" id="right">0</span>
-						<span class="mono-text" id="wrong">0</span>
+						<span class="mono-text" id="counter"></span>
+						<span class="mono-text" id="right"></span>
+						<span class="mono-text" id="wrong"></span>
 					</div>
 				</div>
 			</section>
 			<section id="options">
-				<button class="mono-text"></button>
-				<button class="mono-text"></button>
-				<button class="mono-text"></button>
-				<button class="mono-text"></button>
-				<button class="mono-text"></button>
-				<button class="mono-text"></button>
-				<button class="mono-text"></button>
-				<button class="mono-text"></button>
-				<button class="mono-text"></button>
+				<button class="text" position="1" disabled></button>
+				<button class="text" position="2" disabled></button>
+				<button class="text" position="3" disabled></button>
+				<button class="text" position="4" disabled></button>
+				<button class="text" position="5" disabled></button>
+				<button class="text" position="6" disabled></button>
+				<button class="text" position="7" disabled></button>
+				<button class="text" position="8" disabled></button>
+				<button class="text" position="9" disabled></button>
 			</section>
 		</main>
 	</body>

@@ -19,9 +19,9 @@
 	resizeHeader();
 })();
 // ----------------------------------------- Settings menu ----------------------------------------
-settings = document.querySelector("#settings");
 document.querySelector("#logo").addEventListener("click", () => {
-	settings.setAttribute("open", !document.querySelector("#logo-check").checked);
+	document.querySelector("#settings").setAttribute("open", !document.querySelector("#logo-check").checked);
+	document.querySelector("#start").disabled = !document.querySelector("#logo-check").checked;
 });
 // ----------------------------------------- Radio buttons ----------------------------------------
 // Make these into local storage values
@@ -29,17 +29,22 @@ var guess = "hex", given = "color";
 
 function chooseGuess(event) {
 	// console.log(document.forms.guesses.guess.value);
-	document.querySelector(`#given-${guess}`).disabled = false;
+	if (event.target.value == given) {
+		document.forms.givens.given.value = guess;
+		given = guess;
+	}
 	guess = event.target.value;
-	document.querySelector(`#given-${guess}`).disabled = true;
 	document.querySelector("#title").innerText = `GUESS THE ${guess.toUpperCase()}`;
+	document.querySelector("title").innerText = `GUESS THE ${guess.toUpperCase()}`;
 }
 
 function chooseGiven(event) {
 	// console.log(document.forms.givens.given.value);
-	document.querySelector(`#guess-${given}`).disabled = false;
+	if (event.target.value == guess) {
+		document.forms.guesses.guess.value = given;
+		guess = given;
+	}
 	given = event.target.value;
-	document.querySelector(`#guess-${given}`).disabled = true;
 }
 
 for (let i = 0; i < document.forms.guesses.elements.length; ++i) {
@@ -48,21 +53,24 @@ for (let i = 0; i < document.forms.guesses.elements.length; ++i) {
 }
 // --------------------------------------------- Mode ---------------------------------------------
 // Use a closure?
-var time = document.querySelector("#time"), questions = document.querySelector("#questions");
+var timeEl = document.querySelector("#time"), questionsEl = document.querySelector("#questions");
 function gameMode(event) {
 	switch (event.target.value) {
 		case "speed":
-		case "timed":
-			time.classList.remove("hidden");
-			questions.classList.remove("hidden");
+			timeEl.classList.remove("hidden");
+			questionsEl.classList.add("hidden");
 			break;
-		case "endless":
-			time.classList.add("hidden");
-			questions.classList.add("hidden");
+		case "timed":
+			timeEl.classList.add("hidden");
+			questionsEl.classList.remove("hidden");
 			break;
 		case "zen":
-			time.classList.add("hidden");
-			questions.classList.remove("hidden");
+			timeEl.classList.add("hidden");
+			questionsEl.classList.remove("hidden");
+			break;
+		case "endless":
+			timeEl.classList.add("hidden");
+			questionsEl.classList.add("hidden");
 			break;
 	}
 }
