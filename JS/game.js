@@ -10,51 +10,6 @@ class Color {
 		this.hsl = `hsl(${hsl.join(", ")})`;
 		this.hex = Color.rgbToHex(rgb);
 	}
-	/** Return the type of color value, making the assumption that the value passed in is a valid color */
-	static determineType(color) {
-		color = color.toLowerCase();
-		switch (color) {
-			case (color.substr(0, 4) === "rgb("): return "rgb";
-			case (color.substr(0, 4) === "hsl("): return "hsl";
-			case (color.substr(0, 1) === "#"): return "hex";
-			default: return undefined;
-		}
-	}
-	/** Evaluate and return the type of color value, or undefined if the input is not a color */
-	static evalType(color) {
-		color = String(color).toLowerCase();
-		if (color.substr(0, 4) === "rgb(") {
-			color = color.substring(4, color.length-1).split(",");
-			if (color.length !== 3) return undefined;
-			color = color.map((val) => {
-				if (isNaN(val)) return false;
-				return (val >= 0 && val <= 255);
-			});
-			if (color.every((val) => {return val == true})) return "rgb";
-			else return undefined;
-		} else
-		if (color.substr(0, 4) === "hsl(") {
-			color = color.substring(4, color.length-1).split(",");
-			if (color.length !== 3) return undefined;
-			color[0] = !isNaN(color[0]);
-			for (let i = 1; i < 3; ++i) {
-				if (color[i].substr(color[i].length-1, 1) === "%")
-					color[i] =  color[i].substr(0, color[i].length-1);
-				color[i] = (!isNaN(color[i]) && color[i] >= 0 && color[i] <= 100);
-				}
-			if (color.every((val) => {return val == true})) return "hsl";
-			else return undefined;
-		} else
-		if ((color.substr(0, 1) == "#" && [2, 4, 7].indexOf(color.length) != -1) || [1, 3, 6].indexOf(color.length) != -1) {
-			if (color.substr(0, 1) == "#") color = color.substr(1);
-			for (let i = 0; i < color.length; ++i) {
-				let c = color.charAt(i);
-				if (["a", "b", "c", "d", "e", "f"].indexOf(c) == -1 && isNaN(c)) return undefined;
-			}
-			return "hex";
-		}
-		else return undefined;
-	}
 	/**Return the hexadecimal color equivalent for the rgb value or array.
 	 * @param rgb - The rgb value or array to convert to hexadecimal.
 	 * @param str - An optional boolean value, true by default. If it is false, an array of hex values will be returned instead of a hex string.
@@ -85,7 +40,7 @@ class Color {
 			hex = [hex.substr(0, 2), hex.substr(2, 2), hex.substr(4)];
 		}
 		hex = hex.map((x) => {
-			let rgb = 0;//(isNaN(x) ? -1 : 0);
+			let rgb = 0;
 			for (let i = 0; i < 2; ++i) {
 				let v = String(x).charAt(i).toLowerCase();
 			rgb += (isNaN(v) ? 10 + "abcdef".indexOf(v) : Number(v))*16**(1-i);
@@ -291,6 +246,7 @@ function speedTimer() {
 	}
 	if (time[0] == -1) {
 		alert(`GAME OVER!\nIn ${initialTime[0]}m ${initialTime[1]}s you answered ${counter[0]} questions, out of which you got:\n${right} right\n${wrong} wrong`);
+		clearInterval(timer);
 		setTimeout(resetGame, 50);
 	}
 	setTime(time);
@@ -336,9 +292,14 @@ function genVal() {
 }
 /**Generate an option based on a value in a range determined by the difficulty */
 function genOption(val) {
-	let option = [], result;
+	let result, option = [];
 	for (let i of val) {
-		result = (i - Math.round(difRange/2)) + Math.round(difRange*Math.random());
+		if (Math.floor(Math.random()*2) == 0) {
+			result = i - Math.round(difRange/2) + Math.round(((difRange/2)*0.9)*Math.random());
+		}
+		else {
+			result = i + Math.round((difRange/2)*0.1) + Math.round(((difRange/2)*0.9)*Math.random());
+		}
 		option.push((result < 0 ? result+255 : result) % 255);
 	}
 	return option;

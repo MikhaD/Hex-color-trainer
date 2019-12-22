@@ -4,3 +4,6 @@ detect if user has the developer tools open
 add dark mode
 change the way difficulty is calculated so tht there is a minimum distance from the correct value that the options are allowed to be
 flash timer red in the last 10 seconds of speed
+in speed the alert appears 3 times
+time in alerts is slightly off
+Make game object with all the relavant values and variables as attributes
