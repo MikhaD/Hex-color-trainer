@@ -12,7 +12,7 @@
 	--settings-width: 50rem;
 	--box-shadow-opacity: 50%;
 	--foreground: #000000;
-	--btn-foreground: var(--foreground);
+	--btn-foreground: var(--background);
 	--background: #ffffff;
 	--over: #F8F8F8;
 	--grad-out: #dddddd;
@@ -69,10 +69,15 @@ header {
 .text {
 	font-family: Helvetica;
 	color: var(--foreground);
+	font-size: 1.6rem;
+}
+
+h1 {
+	font-size: var(--header-element) !important;
+	text-align: center;
 }
 
 #title {
-	font-size: var(--header-element);
 	margin: auto;
 	background: linear-gradient(90deg, red, orange, yellow, green, royalblue, darkmagenta,violet);
 	-webkit-background-clip: text;
@@ -145,7 +150,7 @@ main {
 h2 {
 	white-space: nowrap;
 	overflow: hidden;
-	font-size: 2rem;
+	font-size: 2rem !important;
 	margin-bottom: 0.5rem;
 }
 
@@ -222,7 +227,7 @@ input[type="radio"]:checked + .setting-option {
 	grid-template-rows: 1fr 1fr;
 }
 
-#start {
+.btn {
 	font-size: 2.5rem;
 	color: var(--btn-foreground);
 	background: var(--accent);
@@ -231,12 +236,12 @@ input[type="radio"]:checked + .setting-option {
 	transition: all 0.08s linear;
 }
 
-#start:hover {
+.btn:hover {
 	font-size: 2.7rem;
 	filter: hue-rotate(10deg);
 }
 
-#start:active {
+.btn:active {
 	font-size: 2.3rem;
 	margin: 0.5rem;
 }
@@ -303,7 +308,34 @@ input[type="radio"]:checked + .setting-option {
 	font-size: 1.9rem;
 }
 
-.hidden { display: none; }
+#modal {
+	background: rgba(0, 0, 0, 0.9);
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#modal-body {
+	display: grid;
+	grid-template-rows: 1fr 3fr 1fr;
+	padding: 1rem;
+	border-radius: 0.25rem;
+	background: var(--over);
+	width: 60%;
+	height: 50%;
+}
+
+#modal-content {
+	padding: 1rem;
+}
+
+.hidden { display: none !important; }
+
 html.trans-all, html.trans-all * {
 	transition: all 0.5s ease-in-out !important;
 	transition-delay: 0 !important;
@@ -314,6 +346,7 @@ html.trans-all, html.trans-all * {
 	:root { --settings-width: 100% }
 	#guess-box { border-width: 0.8rem }
 	#timer { font-size: 5rem }
+	#progress { grid-template-rows: 3fr 2fr; }
 	#counter { font-size: 3rem }
 	#options button { font-size: 1.6rem }
 	#options button:active { font-size: 1.5rem }
@@ -322,6 +355,13 @@ html.trans-all, html.trans-all * {
 @media(max-width: 470px) {
 	#options button { font-size: 1.3rem }
 	#options button:active { font-size: 1.2rem }
+	#modal-body {
+	grid-template-rows: 1fr 6fr 2fr;
+	width: 80%;
+	}
+	#modal-button { font-size: 2rem; }
+	#modal-button:hover { font-size: 2.1rem; }
+	#modal-button:active { font-size: 1.9rem; }
 }
 @media(max-width: 400px) {
 	#options button { font-size: 1.1rem }

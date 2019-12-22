@@ -316,6 +316,12 @@ function nextQuestion(guess, given) {
 		}
 	}
 }
+
+function modal(title, value) {
+	document.querySelector("#modal-title").innerHTML = title;
+	document.querySelector("#modal-content").innerHTML = value;
+	document.querySelector("#modal").classList.remove("hidden");
+}
 /** The function triggered when one of the guess options is selected */
 function chooseGuess(event) {
 	if (event.target.value == given) {
@@ -399,8 +405,13 @@ function onAnswer(event) {
 		}
 	}, 300);
 }
-resetGame()
+resetGame();
 // ---------------------------------------- Event Listeners ---------------------------------------
+// Add event listener too modal button
+document.querySelector("#modal").addEventListener("click", () => {
+	document.querySelector("#modal").classList.add("hidden");
+	resetGame();
+});
 // Add event listener to logo
 document.querySelector("#logo").addEventListener("click", () => {
 	document.querySelector("#settings").setAttribute("open", !document.querySelector("#logo-check").checked);
