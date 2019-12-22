@@ -1,7 +1,48 @@
+// ------------------------------------------- Variables ------------------------------------------
+const root = document.documentElement;
+const options = document.querySelector("#options").children;
+const guessBoxEl = document.querySelector("#guess-box");
+const timerEl = document.querySelector("#timer");
+const timeEl = document.querySelector("#time");
+const questionsEl = document.querySelector("#questions");
+const counterEl = document.querySelector("#counter");
+const rightEl = document.querySelector("#right"), wrongEl = document.querySelector("#wrong");
+var right, wrong;
+var color, guess, given, ansPos, mode, questions;
+var timer, time, initialTime, counter = [0, 0];
+/**Difficulty Range */
+var difRange;
+/**The highest difficulty level present in the html */
+const maxDif  = (() => {
+	let max, temp = document.forms.difficulty.difficulty.values();
+	for (let i of temp) max = i.value;
+	return Number(max);
+})();
+
+// ---------------------------------------- Adjusting Title ---------------------------------------
+(() => {
+	var headerHeight;
+	var minWidth = 500, maxWidth = 900;
+	function resizeHeader() {
+		if (window.innerWidth <= minWidth)
+		headerHeight = minWidth;
+		else if (window.innerWidth >= maxWidth)
+		headerHeight = maxWidth
+		else
+		headerHeight = window.innerWidth;
+		root.style.setProperty("--header-height", Math.floor(headerHeight/10) + "px");
+	}
+	window.addEventListener("resize", resizeHeader);
+	resizeHeader();
+})();
+
+// ----------------------------------------- Color Class ------------------------------------------
+/**
+ * A class that represents a color value with attributes for the hsl, rgb and hexadecimal representation of the color.
+ * @param {array} rgb - An rgb array
+ */
 class Color {
-	/**
-	 * @param {array} rgb - An rgb array
-	 */
+	/** @param {array} rgb */
 	constructor(rgb) {
 		this.r = Number(rgb[0]); this.g = Number(rgb[1]); this.b = Number(rgb[2]);
 		this.rgb = `rgb(${this.r}, ${this.g}, ${this.b})`;
@@ -12,17 +53,17 @@ class Color {
 	}
 	/**Return the hexadecimal color equivalent for the rgb value or array.
 	 * @param rgb - The rgb value or array to convert to hexadecimal.
-	 * @param str - An optional boolean value, true by default. If it is false, an array of hex values will be returned instead of a hex string.
+	 * @param {boolean} str - An optional boolean value, true by default. If it is false, an array of hex values will be returned instead of a hex string.
 	 */
 	static rgbToHex(rgb, str) {
 		if (typeof rgb !== "object")
 			rgb = rgb.substring(4, rgb.length-1).split(", ");
-		rgb = rgb.map((str) => {let result = Number(str).toString(16); return result.length == 1 ? "0"+result : result});
+		rgb = rgb.map((str) => {return justifyR(Number(str).toString(16), 0, 2).toUpperCase()});
 		return (str !== false) ? "#" + rgb.join("") : rgb;
 	}
 	/**Return the rgb equivalent for the hexadecimal color value or array.
 	 * @param hex - The hexadecimal color value or array to convert to rgb.
-	 * @param str - An optional boolean value, true by default. If it is false, an array of rgb values will be returned instead of an rgb string.
+	 * @param {boolean} str - An optional boolean value, true by default. If it is false, an array of rgb values will be returned instead of an rgb string.
 	 */
 	static hexToRgb(hex, str) {
 		if (typeof hex !== "object") {
@@ -51,7 +92,7 @@ class Color {
 	}
 	/**Return the rgb equivalent for the hsl value or array.
 	 * @param hsl - The hsl value or array to convert to rgb.
-	 * @param str - An optional boolean value, true by default. If it is false, an array of rgb values will be returned instead of an rgb string.
+	 * @param {boolean} str - An optional boolean value, true by default. If it is false, an array of rgb values will be returned instead of an rgb string.
 	 */
 	static hslToRgb(hsl, str) {
 		if (typeof hsl !== "object") {
@@ -80,7 +121,7 @@ class Color {
 	}
 	/**Return the hsl equivalent for the rgb value or array.
 	 * @param rgb - The rgb value or array to convert to hsl.
-	 * @param str - An optional boolean value, true by default. If it is false, an array of hsl values will be returned instead of an hsl string.
+	 * @param {boolean} str - An optional boolean value, true by default. If it is false, an array of hsl values will be returned instead of an hsl string.
 	 */
 	static rgbToHsl(rgb, str) {
 		if (typeof rgb !== "object") {
@@ -104,96 +145,46 @@ class Color {
 	}
 	/**Return the hexadecimal equivalent for the hsl value or array.
 	 * @param hex - The hexadecimal value or array to convert to hsl.
-	 * @param str - An optional boolean value, true by default. If it is false, an array of hex values will be returned instead of hex string.
+	 * @param {boolean} str - An optional boolean value, true by default. If it is false, an array of hex values will be returned instead of hex string.
 	 */
 	hexToHsl(hex, str) {
 		return Color.rgbToHsl(Color.hexToRgb(hex), str);
 	}
 	/**Return the hsl equivalent for the hexadecimal color value or array.
 	 * @param hsl - The hsl value or array to convert to hexadecimal.
-	 * @param str - An optional boolean value, true by default. If it is false, an array of hsl values will be returned instead of an hsl string.
+	 * @param {boolean} str - An optional boolean value, true by default. If it is false, an array of hsl values will be returned instead of an hsl string.
 	 */
 	hslToHex(hsl, str) {
 		return Color.rgbToHex(Color.hslToRgb(hsl), str);
 	}
 }
 
-// ------------------------------------------- Variables ------------------------------------------
-const options = document.querySelector("#options").children;
-const guessBoxEl = document.querySelector("#guess-box");
-const timerEl = document.querySelector("#timer");
-const counterEl = document.querySelector("#counter");
-const rightEl = document.querySelector("#right"), wrongEl = document.querySelector("#wrong");
-var right, wrong;
-var color, guess, given, ansPos, mode, questions;
-var timer, time, initialTime;
-var counter = [0, 0];
-/**Difficulty Range */
-var difRange;
-/**The highest difficulty level present in the html */
-const maxDif  = (() => {
-	let max, temp = document.forms.difficulty.difficulty.values();
-	for (let i of temp) max = i.value;
-	return Number(max);
-})();
-
 // ------------------------------------------- Functions ------------------------------------------
-
-function onAnswer(event) {
-	if (event.target.getAttribute("position") == ansPos) {
-		++right;
-	} else {
-		++wrong;
-		event.target.classList.add("wrong");
-	}
-	document.querySelector(`[position="${ansPos}"]`).classList.add("right");
-	updateScore();
-	++counter[0];
-	updateCounter(counter);
-	for (let i of options) {
-		i.disabled = true;
-		if (guess != "color")
-			i.style["background"] = i.innerHTML;
-		else guessBoxEl.style["background"] = guessBoxEl.innerHTML;
-	}
-	setTimeout(() => {
-		for (let i of options) {
-			if (guess != "color")
-				i.removeAttribute("style");
-			else guessBoxEl.removeAttribute("style");
-			i.classList.remove("wrong");
-			i.classList.remove("right");
-			i.disabled = false;
-		}
-		if (counter[0] != counter[1])
-			nextQuestion(guess, given);
-		else {
-			let alertMsg = (mode == "timed") ? `It took you ${time[0]}m ${time[1]}.${Math.floor(time[2]/10)}s to answer` : "You answered";
-			alert(`GAME OVER!\n${alertMsg} ${questions} questions, out of which you got:\n${right} right\n${wrong} wrong`);
-			setTimeout(resetGame, 50);
-		}
-	}, 300);
-}
-
-function formatS(s, char, length) {
+/**
+ * Justify a string to the right with a given character
+ * @param {*} s - The string to format
+ * @param {*} char - The character to justify with
+ * @param {number} length - The minimum length for the justified string
+ */
+function justifyR(s, char, length) {
 	s = String(s); char = String(char);
 	if (s.length < length) for (let i=0; i<=(length-s.length); ++i, s=char+s) {}
 	return s;
 }
 
-function setTime(t) {
-	timerEl.innerHTML = formatS(t[0], 0, 2) + ":" + formatS(t[1], 0, 2) + ":" + formatS(t[2], 0, 2);
+function updateTime(t) {
+	timerEl.innerHTML = justifyR(t[0], 0, 2) + ":" + justifyR(t[1], 0, 2) + ":" + justifyR(t[2], 0, 2);
 }
 
 function updateCounter(c) {
-	counterEl.innerHTML = formatS(c[0]) + " / " + formatS(c[1]);
+	counterEl.innerHTML = justifyR(c[0]) + " / " + justifyR(c[1]);
 }
 
 function updateScore() {
 	rightEl.innerHTML = right;
 	wrongEl.innerHTML = wrong;
 }
-
+/**Reset all elements of the game */
 function resetGame() {
 	guess = document.forms.guesses.guess.value;
 	given = document.forms.givens.given.value;
@@ -233,7 +224,7 @@ function resetGame() {
 		i.innerHTML = "";
 	}
 }
-
+/**The timing function for the speed gamemode */
 function speedTimer() {
 	--time[2];
 	if (time[2] == -1) {
@@ -249,9 +240,9 @@ function speedTimer() {
 		clearInterval(timer);
 		setTimeout(resetGame, 50);
 	}
-	setTime(time);
+	updateTime(time);
 }
-
+/**The timing function for the timed gamemode */
 function timedTimer() {
 	++time[2];
 	if (time[2] == 100) {
@@ -262,20 +253,20 @@ function timedTimer() {
 		time[1] = 0;
 		++time[0];
 	}
-	setTime(time);
+	updateTime(time);
 }
-
+/**Start a new game of the specified gamemode */
 function startGame() {
 	document.querySelector("#start").classList.add("hidden");
 	timerEl.classList.remove("hidden");
 	switch (mode) {
 		case "speed":
 			timer = setInterval(speedTimer, 10);
-			setTime(time);
+			updateTime(time);
 			break;
 		case "timed":
 			timer = setInterval(timedTimer, 10);
-			setTime(time);
+			updateTime(time);
 			break;
 	}
 	for (let i of options) {
@@ -283,7 +274,6 @@ function startGame() {
 	}
 	nextQuestion(guess, given);
 }
-
 /**Generate a random rgb value array */
 function genVal() {
 	let val = [];
@@ -304,13 +294,12 @@ function genOption(val) {
 	}
 	return option;
 }
-
-// closure for variables?
+/**Call the next question and set all the relevant html elements to their required values */
 function nextQuestion(guess, given) {
 	let val = genVal();
 	color = new Color(val);
 	ansPos = Math.ceil(Math.random()*9);
-	if (given == "hex") guessBoxEl.innerHTML = color.hex.toUpperCase();
+	if (given == "hex") guessBoxEl.innerHTML = color.hex;
 	else if (given == "rgb") guessBoxEl.innerHTML = color.rgb;
 	else if (given == "hsl") guessBoxEl.innerHTML = color.hsl;
 	else if (given == "color") {
@@ -321,27 +310,125 @@ function nextQuestion(guess, given) {
 		options[i].removeAttribute("style");
 		options[i].innerHTML = "";
 		if (guess != "color") {
-			options[i].innerHTML = (i+1 != ansPos ? new Color(genOption(val))[guess] : color[guess]).toUpperCase();
+			options[i].innerHTML = (i+1 != ansPos) ? new Color(genOption(val))[guess] : color[guess];
 		} else {
 			options[i].style["background"] = i+1 != ansPos ? new Color(genOption(val)).hex : color.hex;
 		}
 	}
 }
-
-document.querySelector("#start").addEventListener("click", () => {
-	resetGame()
-	startGame();
-});
-
-for (let i of options) {
-	i.addEventListener("click", onAnswer);
+/** The function triggered when one of the guess options is selected */
+function chooseGuess(event) {
+	if (event.target.value == given) {
+		document.forms.givens.given.value = guess;
+		given = guess;
+	}
+	guess = event.target.value;
+	document.querySelector("#title").innerText = `GUESS THE ${guess.toUpperCase()}`;
+	document.querySelector("title").innerText = `GUESS THE ${guess.toUpperCase()}`;
 }
-
-// ---------------------------------------- Settings Button ---------------------------------------
+/** The function triggered when one of the given options is selected */
+function chooseGiven(event) {
+	if (event.target.value == guess) {
+		document.forms.guesses.guess.value = given;
+		guess = given;
+	}
+	given = event.target.value;
+}
+/**The function that runs when one of the gamemode options is selected */
+function gameMode(event) {
+	switch (event.target.value) {
+		case "speed":
+			timeEl.classList.remove("hidden");
+			questionsEl.classList.add("hidden");
+			break;
+		case "timed":
+			timeEl.classList.add("hidden");
+			questionsEl.classList.remove("hidden");
+			break;
+		case "zen":
+			timeEl.classList.add("hidden");
+			questionsEl.classList.remove("hidden");
+			break;
+		case "endless":
+			timeEl.classList.add("hidden");
+			questionsEl.classList.add("hidden");
+			break;
+	}
+}
+/**The function that runs when one of the theme options is selected */
+function setTheme(event) {
+	if (root.getAttribute("theme") != event.target.value) {
+		root.classList.add("trans-all");
+		root.setAttribute("theme", event.target.value);
+		setTimeout(() => {root.classList.remove("trans-all")}, 500);
+	}
+}
+/**The function that runs when one of the answer buttons is pressed */
+function onAnswer(event) {
+	if (event.target.getAttribute("position") == ansPos) {
+		++right;
+	} else {
+		++wrong;
+		event.target.classList.add("wrong");
+	}
+	document.querySelector(`[position="${ansPos}"]`).classList.add("right");
+	updateScore();
+	++counter[0];
+	updateCounter(counter);
+	for (let i of options) {
+		i.disabled = true;
+		if (guess != "color")
+			i.style["background"] = i.innerHTML;
+		else guessBoxEl.style["background"] = guessBoxEl.innerHTML;
+	}
+	setTimeout(() => {
+		for (let i of options) {
+			if (guess != "color")
+				i.removeAttribute("style");
+			else guessBoxEl.removeAttribute("style");
+			i.classList.remove("wrong");
+			i.classList.remove("right");
+			i.disabled = false;
+		}
+		if (counter[0] != counter[1])
+			nextQuestion(guess, given);
+		else {
+			let alertMsg = (mode == "timed") ? `It took you ${time[0]}m ${time[1]}.${Math.floor(time[2]/10)}s to answer` : "You answered";
+			alert(`GAME OVER!\n${alertMsg} ${questions} questions, out of which you got:\n${right} right\n${wrong} wrong`);
+			setTimeout(resetGame, 50);
+		}
+	}, 300);
+}
+resetGame()
+// ---------------------------------------- Event Listeners ---------------------------------------
+// Add event listener to logo
 document.querySelector("#logo").addEventListener("click", () => {
 	document.querySelector("#settings").setAttribute("open", !document.querySelector("#logo-check").checked);
 	document.querySelector("#start").disabled = !document.querySelector("#logo-check").checked;
 	resetGame();
 });
-
-resetGame()
+// Add event listeners to guess radio buttons
+for (let i of document.forms.guesses.elements) {
+	i.addEventListener("click", chooseGuess);
+}
+// Add event listeners to given radio buttons
+for (let i of document.forms.givens.elements) {
+	i.addEventListener("click", chooseGiven);
+}
+// Add event listeners to gamemode radio buttons
+for (let i of document.forms.modes.elements) {
+	i.addEventListener("click", gameMode);
+}
+// Add event listeners to theme radio buttons
+for (let i of document.forms.themes.elements) {
+	i.addEventListener("click", setTheme);
+}
+// Add event listener to start button
+document.querySelector("#start").addEventListener("click", () => {
+	resetGame()
+	startGame();
+});
+// Add event listeners to option buttons
+for (let i of options) {
+	i.addEventListener("click", onAnswer);
+}

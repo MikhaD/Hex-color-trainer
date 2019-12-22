@@ -1,8 +1,9 @@
 Store all settings in localstorage
-Add option to capitalize hex
+consolidate js
 detect if user has the developer tools open
 change the way difficulty is calculated so tht there is a minimum distance from the correct value that the options are allowed to be
 flash timer red in the last 10 seconds of speed
-in speed the alert appears 3 times
 time in alerts is slightly off
-Make game object with all the relavant values and variables as attributes
+Make game object with all the relavant values and variables as attributes (game.start(), game.end(), game.reset()) take gamemode as a parameter
+Seperate and centralize end conditions
+make single use timing functions into anonymous functions
