@@ -1,6 +1,6 @@
+const root = document.documentElement;
 // ---------------------------------------- Adjusting Title ---------------------------------------
 (() => {
-	var root = document.documentElement;
 	var headerHeight;
 	var minWidth = 500, maxWidth = 900;
 	
@@ -50,6 +50,18 @@ function chooseGiven(event) {
 for (let i = 0; i < document.forms.guesses.elements.length; ++i) {
 	document.forms.guesses.elements[i].addEventListener("click", chooseGuess);
 	document.forms.givens.elements[i].addEventListener("click", chooseGiven);
+}
+
+function setTheme(event) {
+	if (root.getAttribute("theme") != event.target.value) {
+		root.classList.add("trans-all");
+		root.setAttribute("theme", event.target.value);
+		setTimeout(() => {root.classList.remove("trans-all")}, 500);
+	}
+}
+
+for (let i of document.forms.themes.elements) {
+	i.addEventListener("click", setTheme);
 }
 // --------------------------------------------- Mode ---------------------------------------------
 // Use a closure?

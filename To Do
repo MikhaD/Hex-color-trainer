@@ -1,7 +1,6 @@
 Store all settings in localstorage
 Add option to capitalize hex
 detect if user has the developer tools open
-add dark mode
 change the way difficulty is calculated so tht there is a minimum distance from the correct value that the options are allowed to be
 flash timer red in the last 10 seconds of speed
 in speed the alert appears 3 times

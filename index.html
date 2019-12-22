@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" theme="dark">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -90,6 +90,15 @@
 				<h2 class="text">Number of Questions</h2>
 				<form name="numQuestions">
 					<input type="number" name="questions" class="text input" placeholder="questions" max="999" min="1" value="10">
+				</form>
+			</section>
+			<section class="setting" id="themes">
+				<h2 class="text">Color Theme</h2>
+				<form class="setting-options" name="themes">
+					<input type="radio" name="theme" id="light" value="light" checked>
+					<label class="setting-option" for="light">Light</label>
+					<input type="radio" name="theme" id="dark" value="dark">
+					<label class="setting-option" for="dark">Dark</label>
 				</form>
 			</section>
 			<p class="text" id="signiture">Created by MikhaD</p>
