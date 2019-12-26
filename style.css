@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Courier+Prime&display=swap');
 * {
 	margin: 0;
 	border: 0;
@@ -18,8 +19,8 @@
 	--grad-out: #dddddd;
 	--grad-in: var(--background);
 	--accent: #59066b;
-	--right: #075207;
-	--wrong: #810606;
+	--right: #0d6e0d;
+	--wrong: #a30505;
 	font-size: 62.5%;
 	font-family: sans-serif;
 	background: var(--background);
@@ -59,7 +60,7 @@ header {
 }
 
 .mono-text {
-	font-family: Courier;
+	font-family: 'Courier Prime', monospace;
 	display: inline-flex;
 	font-weight: 600;
 	justify-content: center;
