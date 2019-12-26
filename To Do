@@ -1,9 +1,17 @@
-Store all settings in localstorage
-consolidate js
 detect if user has the developer tools open
+
 change the way difficulty is calculated so tht there is a minimum distance from the correct value that the options are allowed to be
+
 flash timer red in the last 10 seconds of speed
+
 time in alerts is slightly off
-Make game object with all the relavant values and variables as attributes (game.start(), game.end(), game.reset()) take gamemode as a parameter
+
 Seperate and centralize end conditions
+
 make single use timing functions into anonymous functions
+
+Make randint function for difficulty object to simplify difficulty calculation
+
+only show welcome modal if the player is new (put warning about localstorage in modal if their's isn't being allowed)
+
+toggle settings menu too what it isn't when settings is pressed, to account for different behavior across browsers.
