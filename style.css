@@ -366,4 +366,5 @@ html.trans-all, html.trans-all * {
 @media(max-width: 400px) {
 	#options button { font-size: 1.1rem }
 	#options button:active { font-size: 1rem }
+	.text { font-size: 1.4rem }
 }
