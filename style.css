@@ -14,12 +14,12 @@
 	--foreground: #000000;
 	--btn-foreground: var(--background);
 	--background: #ffffff;
-	--over: #F8F8F8;
+	--over: #F5F5F5;
 	--grad-out: #dddddd;
 	--grad-in: var(--background);
-	--accent: #83169B;
-	--right: #00a000;
-	--wrong: #b40000;
+	--accent: #59066b;
+	--right: #075207;
+	--wrong: #810606;
 	font-size: 62.5%;
 	font-family: sans-serif;
 	background: var(--background);
@@ -27,13 +27,13 @@
 
 :root[theme="dark"] {
 	--box-shadow-opacity: 80%;
-	--foreground: #a0a0a0;
-	--background: #0c0b14;
+	--foreground: #afafaf;
+	--background: #121119;
 	--btn-foreground: var(--background);
-	--over: #12101e;
-	--grad-in: #1f1b32;
+	--over: #15141f;
+	--grad-in: #1e1b2d;
 	--grad-out: var(--background);
-	--accent: #82139d;
+	--accent: #88389c;
 	--right: #207e20;
 	--wrong: #8f2424;
 }
@@ -75,15 +75,14 @@ header {
 h1 {
 	font-size: var(--header-element) !important;
 	text-align: center;
+	margin: auto;
 }
 
-#title {
-	margin: auto;
+.rainbow {
 	background: linear-gradient(90deg, red, orange, yellow, green, royalblue, darkmagenta,violet);
 	-webkit-background-clip: text;
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
-
 }
 
 #logo {
@@ -218,6 +217,7 @@ input[type="radio"]:checked + .setting-option {
 	border: 1.5rem solid var(--foreground);
 	border-radius: 0.25rem;
 	font-size: 3rem;
+	font-weight: 600;
 	color: var(--foreground);
 	transition: all 0.1s linear;
 }

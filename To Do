@@ -15,3 +15,11 @@ Make randint function for difficulty object to simplify difficulty calculation
 only show welcome modal if the player is new (put warning about localstorage in modal if their's isn't being allowed)
 
 toggle settings menu too what it isn't when settings is pressed, to account for different behavior across browsers.
+
+figure out how to add an event listener to the change of a value in a form so I can trigger it when I set the value from settings
+
+Timer is always 1 ms off on screen, but is up to date in alert
+
+Make display period longer in untimed gamemodes, or make it a setting
+
+Change the settings to a menu that slides up from the bottom.

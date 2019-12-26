@@ -6,12 +6,13 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<link rel="stylesheet" href="style.css">
 	<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
-	<script src="game.js" defer></script>
+	<!-- <script src="game.js" defer></script> -->
+	<script src="newJS.js" defer></script>
 	<title>GUESS THE HEX</title>
 </head>
 <body>
 	<header>
-		<h1 class="text" id="title">GUESS THE HEX</h1>
+		<h1 class="text rainbow">GUESS THE <span class="guess">HEX</span></h1>
 		<label for="logo-check">
 			<input id="logo-check" type="checkbox">
 			<svg id="logo" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" tabindex="0">
@@ -25,7 +26,7 @@
 			<section class="setting">
 				<h2 class="text">Guess</h2>
 				<form class="setting-options" name="guesses">
-					<input type="radio" name="guess" id="guess-hex" value="hex" checked>
+					<input type="radio" name="guess" id="guess-hex" value="hex">
 					<label class="setting-option guess" for="guess-hex">HEX</label>
 					<input type="radio" name="guess" id="guess-rgb" value="rgb">
 					<label class="setting-option guess" for="guess-rgb">RGB</label>
@@ -44,7 +45,7 @@
 					<label class="setting-option given" for="given-rgb">RGB</label>
 					<input type="radio" name="given" id="given-hsl" value="hsl">
 					<label class="setting-option given" for="given-hsl">HSL</label>
-					<input type="radio" name="given" id="given-color" value="color" checked>
+					<input type="radio" name="given" id="given-color" value="color">
 					<label class="setting-option given" for="given-color">COLOR</label>
 				</form>
 			</section>
@@ -53,7 +54,7 @@
 				<form class="setting-options" name="modes">
 					<input type="radio" name="gameMode" id="speed" value="speed">
 					<label class="setting-option" for="speed">Speed</label>
-					<input type="radio" name="gameMode" id="timed" value="timed" checked>
+					<input type="radio" name="gameMode" id="timed" value="timed">
 					<label class="setting-option" for="timed">Timed</label>
 					<input type="radio" name="gameMode" id="zen" value="zen">
 					<label class="setting-option" for="zen">Zen</label>
@@ -64,7 +65,7 @@
 			<section class="setting">
 				<h2 class="text">Difficulty</h2>
 				<form class="setting-options" name="difficulties">
-					<input type="radio" name="difficulty" id="1" value="1" checked>
+					<input type="radio" name="difficulty" id="1" value="1">
 					<label class="setting-option" for="1">1</label>
 					<input type="radio" name="difficulty" id="2" value="2">
 					<label class="setting-option" for="2">2</label>
@@ -94,7 +95,7 @@
 			<section class="setting" id="themes">
 				<h2 class="text">Color Theme</h2>
 				<form class="setting-options" name="themes">
-					<input type="radio" name="theme" id="light" value="light" checked>
+					<input type="radio" name="theme" id="light" value="light">
 					<label class="setting-option" for="light">Light</label>
 					<input type="radio" name="theme" id="dark" value="dark">
 					<label class="setting-option" for="dark">Dark</label>

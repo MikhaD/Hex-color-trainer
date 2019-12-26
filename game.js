@@ -1,23 +1,14 @@
 // ------------------------------------------- Variables ------------------------------------------
-const root = document.documentElement;
-const options = document.querySelector("#options").children;
-const guessBoxEl = document.querySelector("#guess-box");
-const timerEl = document.querySelector("#timer");
-const timeEl = document.querySelector("#time");
-const questionsEl = document.querySelector("#questions");
-const counterEl = document.querySelector("#counter");
-const rightEl = document.querySelector("#right"), wrongEl = document.querySelector("#wrong");
-var right, wrong;
-var color, guess, given, ansPos, mode, questions;
-var timer, time, initialTime, counter = [0, 0];
-/**Difficulty Range */
-var difRange;
-/**The highest difficulty level present in the html */
-const maxDif  = (() => {
-	let max, temp = document.forms.difficulty.difficulty.values();
-	for (let i of temp) max = i.value;
-	return Number(max);
-})();
+const root			= document.documentElement;
+const options		= document.querySelector("#options").children;
+const guessBoxEl	= document.querySelector("#guess-box");
+const timerEl		= document.querySelector("#timer");
+const timeEl		= document.querySelector("#time");
+const questionsEl	= document.querySelector("#questions");
+const counterEl		= document.querySelector("#counter");
+const rightEl		= document.querySelector("#right");
+const wrongEl		= document.querySelector("#wrong");
+const startEl		= document.querySelector("#start");
 
 // ---------------------------------------- Adjusting Title ---------------------------------------
 (() => {
@@ -36,7 +27,299 @@ const maxDif  = (() => {
 	resizeHeader();
 })();
 
-// ----------------------------------------- Color Class ------------------------------------------
+// -------------------------------------------- Classes -------------------------------------------
+class Utils {
+	/**
+	 * Justify a string to the right with a given character
+	 * @param {*} s - The string to format
+	 * @param {*} char - The character to justify with
+	 * @param {number} length - The minimum length for the justified string
+	 */
+	static justifyR(s, char, length) {
+		s = String(s); char = String(char);
+		if (s.length < length) for (let i=0; i<=(length-s.length); ++i, s=char+s) {}
+		return s;
+	}
+	/**Generate a random rgb value array */
+	static genRgb() {
+		let arr = [];
+		for (let i = 0; i < 3; ++i) arr.push(Math.round(Math.random() * 255));
+		return arr;
+	}
+	/**
+	 * Modify the state of all the option buttons.
+	 * @param {boolean} reset - true if you wish to reset the contents and style of the buttons. 
+	 * @param {boolean} disabled - whether to disable the buttons. If left out the buttons will be unchanged. 
+	 */
+	static setOptions(reset, disabled) {
+		reset = (reset == undefined || typeof reset != "boolean") ? true : reset;
+		for (let i of options) {
+			if (disabled != undefined && typeof disabled == "boolean")
+				i.disabled = disabled;
+			if (reset) {
+			i.removeAttribute("style");
+			i.innerHTML = "";
+			}
+		}
+	}
+	static updateTitle(title) {
+		document.querySelector(".guess").innerText = title.toUpperCase();
+		document.querySelector("title").innerText = `GUESS THE ${title.toUpperCase()}`;
+	}
+	static modal(title, value) {
+		document.querySelector("#modal-title").innerHTML = title;
+		document.querySelector("#modal-content").innerHTML = value;
+		document.querySelector("#modal").classList.remove("hidden");
+	}
+}
+
+class Difficulty {
+	/**The highest difficulty level present in the html */
+	static max  = (() => {
+		let max, temp = document.forms.difficulties.difficulty.values();
+		for (let i of temp) max = i.value;
+		return Number(max);
+	})();
+	constructor(difficulty) {
+		this.difficulty = Number(difficulty);
+		this.range = Math.round((1 + Difficulty.max - this.difficulty)*(255 / Difficulty.max)/2);
+	}
+	/**Generate an rgb array based on another rgb array in a range determined by the difficulty */
+	option(val) {
+		let result, option = [];
+		for (let i of val.rgbArray) {
+			if (Math.random() < 0.5) {
+				result = (i - this.range) + Math.round(this.range*0.9*Math.random());
+			}
+			else {
+				result = i + Math.round(this.range*0.1 + this.range*0.9*Math.random());
+			}
+			option.push((result < 0 ? result+255 : result) % 255);
+		}
+		return option;
+	}
+}
+
+class Settings {
+	static defaults = {
+		"guess": "color",
+		"given": "hex",
+		"mode": "timed",
+		"difficulty": "1",
+		"questions": "10",
+		"mins": "1",
+		"secs": "30",
+		"theme": "light"
+	}
+	constructor() {
+		let couldRead = this.read();
+		console.log(couldRead);
+		
+		if (!couldRead) {
+			this.guess = Settings.defaults.guess;
+			this.given = Settings.defaults.given;
+			this.mode = Settings.defaults.mode;
+			this.difficulty = Settings.defaults.difficulty;
+			this.questions = Settings.defaults.questions;
+			this.mins = Settings.defaults.mins;
+			this.secs = Settings.defaults.secs;
+			this.theme = Settings.defaults.theme;
+		}
+		document.forms.guesses.guess.value = this.guess;
+		Utils.updateTitle(this.guess);
+		document.forms.givens.given.value = this.given;
+		document.forms.modes.gameMode.value = this.mode;
+		document.forms.difficulties.difficulty.value = this.difficulty;
+		document.forms.numQuestions.questions.value = this.questions;
+		document.forms.time.minutes.value = this.mins;
+		document.forms.time.seconds.value = this.secs;
+		console.log(this.theme);
+		document.forms.themes.theme.value = this.theme;
+		// setTheme({"target":document.querySelector(`[value=${this.theme}`)});
+	}
+	store() {
+		try {
+			localStorage.setItem("guess", this.guess);
+			localStorage.setItem("given", this.given);
+			localStorage.setItem("mode", this.mode);
+			localStorage.setItem("difficulty", this.difficulty);
+			localStorage.setItem("questions", this.questions);
+			localStorage.setItem("mins", this.mins);
+			localStorage.setItem("secs", this.secs);
+			localStorage.setItem("theme", this.theme);
+		} catch (error) {
+			console.warn("Unable to store settings in localStorage");
+		}
+	}
+	read() {
+		try {
+			this.guess = localStorage.getItem("guess");
+			this.given = localStorage.getItem("given");
+			this.mode = localStorage.getItem("mode");
+			this.difficulty = localStorage.getItem("difficulty");
+			this.questions = localStorage.getItem("questions");
+			this.mins = localStorage.getItem("mins");
+			this.secs = localStorage.getItem("secs");
+			this.theme = localStorage.getItem("theme");
+			for (let i in this) {
+				if (this[i] == null || this[i] == undefined)
+					this[i] = Settings.defaults[i];
+			}
+			return true;
+		} catch (error) {
+			return false;
+		}
+	}
+}
+
+/**
+ * @param settings - A settings object.
+ */
+class Game {
+	constructor(settings) {
+		this.settings = settings;
+		this.difficulty;
+		this.timer;
+		this.color;
+		this.ansPos;
+		this.reset();
+	}
+	updateTime(direction) {
+		if (direction == "-") {
+			--this.time[2];
+			if (this.time[2] == -1) {
+				this.time[2] = 99;
+				--this.time[1];
+			}
+			if (this.time[1] == -1) {
+				this.time[1] = 59;
+				--this.time[0];
+			}
+		}
+		else {
+			++this.time[2];
+			if (this.time[2] == 100) {
+				this.time[2] = 0;
+				++this.time[1];
+			}
+			if (this.time[1] == 60) {
+				this.time[1] = 0;
+				++this.time[0];
+			}
+		}
+		timerEl.innerHTML = this.time.map((el) => {return Utils.justifyR(el, 0, 2)}).join(":");
+	}
+	updateCounter() {
+		counterEl.innerHTML = Utils.justifyR(this.counter[0], 0, 2) + " / " + Utils.justifyR(this.counter[1], 0, 2);
+	}
+	updateScore() {
+		rightEl.innerHTML = this.right;
+		wrongEl.innerHTML = this.wrong;
+	}
+	/**Call the next question and set all the relevant html elements to their required values */
+	nextQuestion() {
+		this.color = new Color(Utils.genRgb());
+		this.ansPos = Math.ceil(Math.random()*9);
+		if (this.settings.given != "color")
+			guessBoxEl.innerHTML = this.color[this.settings.given];
+		else {
+			guessBoxEl.innerHTML = "";
+			guessBoxEl.style["background"] = this.color.rgb;
+		}
+		for (let i = 0; i < options.length; ++i) {
+			options[i].removeAttribute("style");
+			options[i].innerHTML = "";
+			if (this.settings.guess != "color") {
+				options[i].innerHTML = (i+1 != this.ansPos) ? new Color(this.difficulty.option(this.color))[this.settings.guess] : this.color[this.settings.guess];
+			} else {
+				options[i].style["background"] = i+1 != this.ansPos ? new Color(this.difficulty.option(this.color)).hex : this.color.hex;
+			}
+		}
+	}
+	reset() {
+		this.end();
+		this.right = 0;
+		this.wrong = 0;
+		this.updateScore();
+		this.settings.mode = document.forms.modes.gameMode.value;
+		this.settings.difficulty = document.forms.difficulties.difficulty.value;
+		if (this.difficulty == undefined || this.settings.difficulty != this.difficulty.difficulty)
+			this.difficulty = new Difficulty(this.settings.difficulty);
+		this.settings.questions = document.forms.numQuestions.questions.value;
+
+		this.settings.mins = document.forms.time.minutes.value;
+		this.settings.secs = document.forms.time.seconds.value;
+		if (this.settings.mins === 0 && this.settings.secs === 0) this.settings.mins = this.settings.defaults.mins;
+
+		this.counter = [0, 0];
+		this.time = [0, 0, 0];
+		this.initialTime = [this.settings.mins, this.settings.secs];
+		if (this.settings.mode == "speed") {
+			this.time = [this.settings.mins, this.settings.secs, 0];
+			this.counter[1] = " ∞";
+		}
+		else if (this.settings.mode == "timed") {
+			this.counter[1] = this.settings.questions;
+		}
+		else if (this.settings.mode == "zen") {
+			this.counter[1] = this.settings.questions;
+		}
+		else {
+			this.counter[1] = " ∞";
+		}
+
+		guessBoxEl.removeAttribute("style");
+		guessBoxEl.innerHTML = "";
+		timerEl.classList.add("hidden");
+		timerEl.innerHTML = "";
+		startEl.classList.remove("hidden");
+		this.updateCounter();
+		Utils.setOptions(true);
+	}
+	start() {
+		startEl.classList.add("hidden");
+		timerEl.classList.remove("hidden");
+		switch (this.settings.mode) {
+			case "speed":
+				this.timer = setInterval(() => {
+					this.updateTime("-");
+					if (this.time.every((val) => {return val === 0}))
+						this.finish();
+				}, 10);
+				break;
+			case "timed":
+				this.timer = setInterval(() => {
+					this.updateTime("+");
+				}, 10);
+				break;
+		}
+		Utils.setOptions(false, false);
+		this.nextQuestion();
+	}
+	end() {
+		clearInterval(this.timer);
+		Utils.setOptions(false, true);
+	}
+	finish() {
+		this.end();
+		switch (this.settings.mode) {
+			case "speed":
+				alert(`GAME OVER!\nIn ${game.initialTime[0]}m ${game.initialTime[1]}s you answered ${game.counter[0]} questions, out of which you got:\n${game.right} right\n${game.wrong} wrong`);
+				break;
+		
+			case "timed":
+				alert(`GAME OVER!\nIt took you ${game.time[0]}m ${game.time[1]}.${Math.floor(game.time[2]/10)}s to answer ${game.settings.questions} questions, out of which you got:\n${game.right} right\n${game.wrong} wrong`);
+				break;
+
+			case "zen":
+				alert(`GAME OVER!\nYou answered ${game.settings.questions} questions, out of which you got:\n${game.right} right\n${game.wrong} wrong`)
+				break;
+		}
+		// Put in the close modal button when ending modals are implemented
+		this.reset();
+	}
+}
+
 /**
  * A class that represents a color value with attributes for the hsl, rgb and hexadecimal representation of the color.
  * @param {array} rgb - An rgb array
@@ -44,11 +327,10 @@ const maxDif  = (() => {
 class Color {
 	/** @param {array} rgb */
 	constructor(rgb) {
-		this.r = Number(rgb[0]); this.g = Number(rgb[1]); this.b = Number(rgb[2]);
-		this.rgb = `rgb(${this.r}, ${this.g}, ${this.b})`;
-		let hsl = Color.rgbToHsl(rgb, false);
-		this.h = hsl[0]; this.s = hsl[1]; this.l = hsl[2];
-		this.hsl = `hsl(${hsl.join(", ")})`;
+		this.rgbArray = rgb.map(Number);
+		this.rgb = `rgb(${rgb.join(", ")})`;
+		this.hslArray = Color.rgbToHsl(rgb, false);
+		this.hsl = `hsl(${this.hslArray.join(", ")})`;
 		this.hex = Color.rgbToHex(rgb);
 	}
 	/**Return the hexadecimal color equivalent for the rgb value or array.
@@ -58,7 +340,7 @@ class Color {
 	static rgbToHex(rgb, str) {
 		if (typeof rgb !== "object")
 			rgb = rgb.substring(4, rgb.length-1).split(", ");
-		rgb = rgb.map((str) => {return justifyR(Number(str).toString(16), 0, 2).toUpperCase()});
+		rgb = rgb.map((str) => {return Utils.justifyR(Number(str).toString(16), 0, 2).toUpperCase()});
 		return (str !== false) ? "#" + rgb.join("") : rgb;
 	}
 	/**Return the rgb equivalent for the hexadecimal color value or array.
@@ -159,187 +441,52 @@ class Color {
 	}
 }
 
-// ------------------------------------------- Functions ------------------------------------------
-/**
- * Justify a string to the right with a given character
- * @param {*} s - The string to format
- * @param {*} char - The character to justify with
- * @param {number} length - The minimum length for the justified string
- */
-function justifyR(s, char, length) {
-	s = String(s); char = String(char);
-	if (s.length < length) for (let i=0; i<=(length-s.length); ++i, s=char+s) {}
-	return s;
-}
+// ---------------------------------------- Event Listeners ---------------------------------------
+// Add event listener to modal button
+document.querySelector("#modal").addEventListener("click", () => {
+	document.querySelector("#modal").classList.add("hidden");
+	game.reset();
+});
 
-function updateTime(t) {
-	timerEl.innerHTML = justifyR(t[0], 0, 2) + ":" + justifyR(t[1], 0, 2) + ":" + justifyR(t[2], 0, 2);
-}
+// Add event listener to logo
+document.querySelector("#logo").addEventListener("click", () => {
+	document.querySelector("#settings").setAttribute("open", !document.querySelector("#logo-check").checked);
+	// startEl.disabled = !document.querySelector("#logo-check").checked;
+	if (document.querySelector("#logo-check").checked) {
+		game.settings.store();
+		game.reset();
+	} else {
+		game.end();
+	}
+});
 
-function updateCounter(c) {
-	counterEl.innerHTML = justifyR(c[0]) + " / " + justifyR(c[1]);
-}
-
-function updateScore() {
-	rightEl.innerHTML = right;
-	wrongEl.innerHTML = wrong;
-}
-/**Reset all elements of the game */
-function resetGame() {
-	guess = document.forms.guesses.guess.value;
-	given = document.forms.givens.given.value;
-	mode = document.forms.modes.gameMode.value;
-	questions = document.forms.numQuestions.questions.value;
-	guessBoxEl.removeAttribute("style");
-	guessBoxEl.innerHTML = "";
-	timerEl.classList.add("hidden");
-	timerEl.innerHTML = "";
-	clearInterval(timer);
-	counter[0] = 0;
-	if (mode == "speed") {
-		let mins = Number(document.forms.time.minutes.value), secs = Number(document.forms.time.seconds.value);
-		if (mins === 0 && secs === 0) mins = 1;
-		time = [mins, secs, 0];
-		initialTime = [mins, secs];
-		counter[1] = " ∞";
-	}
-	else if (mode == "timed") {
-		time = [0, 0, 0];
-		counter[1] = questions;
-	}
-	else if (mode == "zen") {
-		counter[1] = questions;
-	}
-	else {
-		counter[1] = " ∞";
-	}
-	updateCounter(counter);
-	document.querySelector("#start").classList.remove("hidden");
-	right = 0; wrong = 0;
-	updateScore();
-	difRange = (1 + maxDif - document.forms.difficulty.difficulty.value) * Math.round(255/maxDif);
-	for (let i of options) {
-		i.disabled = true;
-		i.removeAttribute("style");
-		i.innerHTML = "";
-	}
-}
-/**The timing function for the speed gamemode */
-function speedTimer() {
-	--time[2];
-	if (time[2] == -1) {
-		time[2] = 99;
-		--time[1];
-	}
-	if (time[1] == -1) {
-		time[1] = 59;
-		--time[0];
-	}
-	if (time[0] == -1) {
-		alert(`GAME OVER!\nIn ${initialTime[0]}m ${initialTime[1]}s you answered ${counter[0]} questions, out of which you got:\n${right} right\n${wrong} wrong`);
-		clearInterval(timer);
-		setTimeout(resetGame, 50);
-	}
-	updateTime(time);
-}
-/**The timing function for the timed gamemode */
-function timedTimer() {
-	++time[2];
-	if (time[2] == 100) {
-		time[2] = 0;
-		++time[1];
-	}
-	if (time[1] == 60) {
-		time[1] = 0;
-		++time[0];
-	}
-	updateTime(time);
-}
-/**Start a new game of the specified gamemode */
-function startGame() {
-	document.querySelector("#start").classList.add("hidden");
-	timerEl.classList.remove("hidden");
-	switch (mode) {
-		case "speed":
-			timer = setInterval(speedTimer, 10);
-			updateTime(time);
-			break;
-		case "timed":
-			timer = setInterval(timedTimer, 10);
-			updateTime(time);
-			break;
-	}
-	for (let i of options) {
-		i.disabled = false;
-	}
-	nextQuestion(guess, given);
-}
-/**Generate a random rgb value array */
-function genVal() {
-	let val = [];
-	for (let i = 0; i < 3; ++i) val.push(Math.round(Math.random() * 255));
-	return val;
-}
-/**Generate an option based on a value in a range determined by the difficulty */
-function genOption(val) {
-	let result, option = [];
-	for (let i of val) {
-		if (Math.floor(Math.random()*2) == 0) {
-			result = i - Math.round(difRange/2) + Math.round(((difRange/2)*0.9)*Math.random());
-		}
-		else {
-			result = i + Math.round((difRange/2)*0.1) + Math.round(((difRange/2)*0.9)*Math.random());
-		}
-		option.push((result < 0 ? result+255 : result) % 255);
-	}
-	return option;
-}
-/**Call the next question and set all the relevant html elements to their required values */
-function nextQuestion(guess, given) {
-	let val = genVal();
-	color = new Color(val);
-	ansPos = Math.ceil(Math.random()*9);
-	if (given == "hex") guessBoxEl.innerHTML = color.hex;
-	else if (given == "rgb") guessBoxEl.innerHTML = color.rgb;
-	else if (given == "hsl") guessBoxEl.innerHTML = color.hsl;
-	else if (given == "color") {
-		guessBoxEl.innerHTML = "";
-		guessBoxEl.style["background"] = color.rgb;
-	}
-	for (let i = 0; i < 9; ++i) {
-		options[i].removeAttribute("style");
-		options[i].innerHTML = "";
-		if (guess != "color") {
-			options[i].innerHTML = (i+1 != ansPos) ? new Color(genOption(val))[guess] : color[guess];
-		} else {
-			options[i].style["background"] = i+1 != ansPos ? new Color(genOption(val)).hex : color.hex;
-		}
-	}
-}
-
-function modal(title, value) {
-	document.querySelector("#modal-title").innerHTML = title;
-	document.querySelector("#modal-content").innerHTML = value;
-	document.querySelector("#modal").classList.remove("hidden");
-}
 /** The function triggered when one of the guess options is selected */
 function chooseGuess(event) {
-	if (event.target.value == given) {
-		document.forms.givens.given.value = guess;
-		given = guess;
+	if (event.target.value == game.settings.given) {
+		document.forms.givens.given.value = game.settings.guess;
+		game.settings.given = game.settings.guess;
 	}
-	guess = event.target.value;
-	document.querySelector("#title").innerText = `GUESS THE ${guess.toUpperCase()}`;
-	document.querySelector("title").innerText = `GUESS THE ${guess.toUpperCase()}`;
+	game.settings.guess = event.target.value;
+	Utils.updateTitle(event.target.value);
 }
+// Add event listeners to guess radio buttons
+for (let i of document.forms.guesses.elements) {
+	i.addEventListener("click", chooseGuess);
+}
+
 /** The function triggered when one of the given options is selected */
 function chooseGiven(event) {
-	if (event.target.value == guess) {
-		document.forms.guesses.guess.value = given;
-		guess = given;
+	if (event.target.value == game.settings.guess) {
+		document.forms.guesses.guess.value = game.settings.given;
+		game.settings.guess = game.settings.given;
 	}
-	given = event.target.value;
+	game.settings.given = event.target.value;
 }
+// Add event listeners to given radio buttons
+for (let i of document.forms.givens.elements) {
+	i.addEventListener("click", chooseGiven);
+}
+
 /**The function that runs when one of the gamemode options is selected */
 function gameMode(event) {
 	switch (event.target.value) {
@@ -361,85 +508,67 @@ function gameMode(event) {
 			break;
 	}
 }
+// Add event listeners to gamemode radio buttons
+for (let i of document.forms.modes.elements) {
+	i.addEventListener("click", gameMode);
+}
+
 /**The function that runs when one of the theme options is selected */
 function setTheme(event) {
-	if (root.getAttribute("theme") != event.target.value) {
+	if (game.settings.theme != event.target.value) {
 		root.classList.add("trans-all");
 		root.setAttribute("theme", event.target.value);
 		setTimeout(() => {root.classList.remove("trans-all")}, 500);
+		game.settings.theme = event.target.value;
 	}
 }
+// Add event listeners to theme radio buttons
+for (let i of document.forms.themes.elements) {
+	i.addEventListener("click", setTheme);
+}
+
+// Add event listener to start button
+startEl.addEventListener("click", () => {
+	game.start();
+});
+
 /**The function that runs when one of the answer buttons is pressed */
 function onAnswer(event) {
-	if (event.target.getAttribute("position") == ansPos) {
-		++right;
+	if (event.target.getAttribute("position") == game.ansPos) {
+		++game.right;
 	} else {
-		++wrong;
+		++game.wrong;
 		event.target.classList.add("wrong");
 	}
-	document.querySelector(`[position="${ansPos}"]`).classList.add("right");
-	updateScore();
-	++counter[0];
-	updateCounter(counter);
+	document.querySelector(`[position="${game.ansPos}"]`).classList.add("right");
+	game.updateScore();
+	++game.counter[0];
+	game.updateCounter();
 	for (let i of options) {
 		i.disabled = true;
-		if (guess != "color")
+		if (game.settings.guess != "color")
 			i.style["background"] = i.innerHTML;
 		else guessBoxEl.style["background"] = guessBoxEl.innerHTML;
 	}
 	setTimeout(() => {
 		for (let i of options) {
-			if (guess != "color")
+			if (game.settings.guess != "color")
 				i.removeAttribute("style");
 			else guessBoxEl.removeAttribute("style");
 			i.classList.remove("wrong");
 			i.classList.remove("right");
 			i.disabled = false;
 		}
-		if (counter[0] != counter[1])
-			nextQuestion(guess, given);
+		if (game.counter[0] != game.counter[1])
+			game.nextQuestion();
 		else {
-			let alertMsg = (mode == "timed") ? `It took you ${time[0]}m ${time[1]}.${Math.floor(time[2]/10)}s to answer` : "You answered";
-			alert(`GAME OVER!\n${alertMsg} ${questions} questions, out of which you got:\n${right} right\n${wrong} wrong`);
-			setTimeout(resetGame, 50);
+			game.finish();
 		}
-	}, 300);
+	}, 400);
 }
-resetGame();
-// ---------------------------------------- Event Listeners ---------------------------------------
-// Add event listener too modal button
-document.querySelector("#modal").addEventListener("click", () => {
-	document.querySelector("#modal").classList.add("hidden");
-	resetGame();
-});
-// Add event listener to logo
-document.querySelector("#logo").addEventListener("click", () => {
-	document.querySelector("#settings").setAttribute("open", !document.querySelector("#logo-check").checked);
-	document.querySelector("#start").disabled = !document.querySelector("#logo-check").checked;
-	resetGame();
-});
-// Add event listeners to guess radio buttons
-for (let i of document.forms.guesses.elements) {
-	i.addEventListener("click", chooseGuess);
-}
-// Add event listeners to given radio buttons
-for (let i of document.forms.givens.elements) {
-	i.addEventListener("click", chooseGiven);
-}
-// Add event listeners to gamemode radio buttons
-for (let i of document.forms.modes.elements) {
-	i.addEventListener("click", gameMode);
-}
-// Add event listeners to theme radio buttons
-for (let i of document.forms.themes.elements) {
-	i.addEventListener("click", setTheme);
-}
-// Add event listener to start button
-document.querySelector("#start").addEventListener("click", () => {
-	resetGame()
-	startGame();
-});
 // Add event listeners to option buttons
 for (let i of options) {
 	i.addEventListener("click", onAnswer);
 }
+
+var game = new Game(new Settings());
