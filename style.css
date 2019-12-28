@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Courier+Prime&display=swap');
 * {
 	margin: 0;
@@ -22,7 +23,7 @@
 	--right: #0d6e0d;
 	--wrong: #a30505;
 	font-size: 62.5%;
-	font-family: sans-serif;
+	font-family: 'Roboto', sans-serif;
 	background: var(--background);
 }
 
@@ -68,7 +69,6 @@ header {
 }
 
 .text {
-	font-family: Helvetica;
 	color: var(--foreground);
 	font-size: 1.6rem;
 }
@@ -85,6 +85,8 @@ h1 {
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
 }
+
+.red { color: var(--wrong) !important}
 
 #logo {
 	height: var(--header-element);
@@ -205,10 +207,10 @@ input[type="radio"]:checked + .setting-option {
 }
 
 #controls {
-	margin: 1rem;
+	padding: 1rem;
 	display: grid;
 	gap: 1rem;
-	grid-template-rows: 1fr 2fr;
+	grid-template-rows: 1fr 1fr 1fr;
 }
 
 #guess-box {
@@ -221,11 +223,6 @@ input[type="radio"]:checked + .setting-option {
 	font-weight: 600;
 	color: var(--foreground);
 	transition: all 0.1s linear;
-}
-
-#control-box {
-	display: grid;
-	grid-template-rows: 1fr 1fr;
 }
 
 .btn {
@@ -311,11 +308,11 @@ input[type="radio"]:checked + .setting-option {
 
 #modal {
 	background: rgba(0, 0, 0, 0.9);
-	position: absolute;
+	position: fixed;
 	top: 0;
-	bottom: 0;
 	left: 0;
-	right: 0;
+	width: 100%;
+	height: 100vh;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -345,6 +342,10 @@ html.trans-all, html.trans-all * {
 @media(max-width: 900px) {
 	main { grid-template: 5fr 8fr / 1fr }
 	:root { --settings-width: 100% }
+	#controls {
+		row-gap: 0.5rem;
+		padding: 0 1rem 0 1rem;
+	}
 	#guess-box { border-width: 0.8rem }
 	#timer { font-size: 5rem }
 	#progress { grid-template-rows: 3fr 2fr; }
@@ -368,4 +369,9 @@ html.trans-all, html.trans-all * {
 	#options button { font-size: 1.1rem }
 	#options button:active { font-size: 1rem }
 	.text { font-size: 1.4rem }
+}
+@media(max-height: 550px) {
+	#controls { grid-template-rows: 3fr 2fr 3fr }
+	#timer { font-size: 3.5rem; }
+	#guess-box { font-size: 2.5rem; }
 }

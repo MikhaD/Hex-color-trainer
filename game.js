@@ -40,10 +40,20 @@ class Utils {
 		if (s.length < length) for (let i=0; i<=(length-s.length); ++i, s=char+s) {}
 		return s;
 	}
+	/**
+	 * Generate a random integer between lower and upper, inclusive.
+	 * @param {number} lower The lower bound of the random integer.
+	 * @param {number} upper The upper bound of the random integer.
+	 */
+	static randInt(lower, upper) {
+		lower = Math.round(lower);
+		upper = Math.round(upper);
+		return Math.round((upper-lower) * Math.random() + lower);
+	}
 	/**Generate a random rgb value array */
 	static genRgb() {
 		let arr = [];
-		for (let i = 0; i < 3; ++i) arr.push(Math.round(Math.random() * 255));
+		for (let i = 0; i < 3; ++i) arr.push(Utils.randInt(0, 255));
 		return arr;
 	}
 	/**
@@ -86,15 +96,25 @@ class Difficulty {
 	}
 	/**Generate an rgb array based on another rgb array in a range determined by the difficulty */
 	option(val) {
-		let result, option = [];
+		let option = [];
 		for (let i of val.rgbArray) {
-			if (Math.random() < 0.5) {
-				result = (i - this.range) + Math.round(this.range*0.9*Math.random());
+			let lowerBound = i - this.range;
+			let upperBound = i + this.range;
+			let midStop = Math.round(i - (this.range*0.1));
+			let midStart = Math.round(i + (this.range*0.1));
+			if (lowerBound < 0) {
+				upperBound += Math.abs(lowerBound) - 1;
+				lowerBound = 0;
+			} else if (upperBound > 255) {
+				lowerBound -= (upperBound - 254);
+				upperBound = 255;
 			}
-			else {
-				result = i + Math.round(this.range*0.1 + this.range*0.9*Math.random());
-			}
-			option.push((result < 0 ? result+255 : result) % 255);
+			let result = Utils.randInt(lowerBound, upperBound - (1 + 0.2*this.range));
+			if (result > midStop && result < midStart)
+				result = (result - midStop) + midStart;
+			if (result > 255)
+				result = (result - 256) + lowerBound;
+			option.push(result);
 		}
 		return option;
 	}
@@ -219,7 +239,7 @@ class Game {
 	/**Call the next question and set all the relevant html elements to their required values */
 	nextQuestion() {
 		this.color = new Color(Utils.genRgb());
-		this.ansPos = Math.ceil(Math.random()*9);
+		this.ansPos = Utils.randInt(1, 9);
 		if (this.settings.given != "color")
 			guessBoxEl.innerHTML = this.color[this.settings.given];
 		else {
@@ -283,7 +303,16 @@ class Game {
 			case "speed":
 				this.timer = setInterval(() => {
 					this.updateTime("-");
-					if (this.time.every((val) => {return val === 0}))
+					if (this.time[0] == 0 && this.time[1] <= 10 && this.time[3] == 0) {
+						if (this.time[1] % 2 == 1) {
+							timerEl.classList.add("red");
+							console.log("added red");
+						} else {
+							timeEl.classList.remove("red");
+							console.log("removed red");	
+						}
+					}
+					if (this.time.every((val) => {return val == 0}))
 						this.finish();
 				}, 10);
 				break;
@@ -442,133 +471,135 @@ class Color {
 }
 
 // ---------------------------------------- Event Listeners ---------------------------------------
-// Add event listener to modal button
-document.querySelector("#modal").addEventListener("click", () => {
-	document.querySelector("#modal").classList.add("hidden");
-	game.reset();
-});
-
-// Add event listener to logo
-document.querySelector("#logo").addEventListener("click", () => {
-	document.querySelector("#settings").setAttribute("open", !document.querySelector("#logo-check").checked);
-	// startEl.disabled = !document.querySelector("#logo-check").checked;
-	if (document.querySelector("#logo-check").checked) {
-		game.settings.store();
+(() => {
+	// Add event listener to modal button
+	document.querySelector("#modal").addEventListener("click", () => {
+		document.querySelector("#modal").classList.add("hidden");
 		game.reset();
-	} else {
-		game.end();
-	}
-});
+	});
 
-/** The function triggered when one of the guess options is selected */
-function chooseGuess(event) {
-	if (event.target.value == game.settings.given) {
-		document.forms.givens.given.value = game.settings.guess;
-		game.settings.given = game.settings.guess;
-	}
-	game.settings.guess = event.target.value;
-	Utils.updateTitle(event.target.value);
-}
-// Add event listeners to guess radio buttons
-for (let i of document.forms.guesses.elements) {
-	i.addEventListener("click", chooseGuess);
-}
+	// Add event listener to logo
+	document.querySelector("#logo").addEventListener("click", () => {
+		document.querySelector("#settings").setAttribute("open", !document.querySelector("#logo-check").checked);
+		// startEl.disabled = !document.querySelector("#logo-check").checked;
+		if (document.querySelector("#logo-check").checked) {
+			game.settings.store();
+			game.reset();
+		} else {
+			game.end();
+		}
+	});
 
-/** The function triggered when one of the given options is selected */
-function chooseGiven(event) {
-	if (event.target.value == game.settings.guess) {
-		document.forms.guesses.guess.value = game.settings.given;
-		game.settings.guess = game.settings.given;
+	/** The function triggered when one of the guess options is selected */
+	function chooseGuess(event) {
+		if (event.target.value == game.settings.given) {
+			document.forms.givens.given.value = game.settings.guess;
+			game.settings.given = game.settings.guess;
+		}
+		game.settings.guess = event.target.value;
+		Utils.updateTitle(event.target.value);
 	}
-	game.settings.given = event.target.value;
-}
-// Add event listeners to given radio buttons
-for (let i of document.forms.givens.elements) {
-	i.addEventListener("click", chooseGiven);
-}
+	// Add event listeners to guess radio buttons
+	for (let i of document.forms.guesses.elements) {
+		i.addEventListener("click", chooseGuess);
+	}
 
-/**The function that runs when one of the gamemode options is selected */
-function gameMode(event) {
-	switch (event.target.value) {
-		case "speed":
-			timeEl.classList.remove("hidden");
-			questionsEl.classList.add("hidden");
-			break;
-		case "timed":
-			timeEl.classList.add("hidden");
-			questionsEl.classList.remove("hidden");
-			break;
-		case "zen":
-			timeEl.classList.add("hidden");
-			questionsEl.classList.remove("hidden");
-			break;
-		case "endless":
-			timeEl.classList.add("hidden");
-			questionsEl.classList.add("hidden");
-			break;
+	/** The function triggered when one of the given options is selected */
+	function chooseGiven(event) {
+		if (event.target.value == game.settings.guess) {
+			document.forms.guesses.guess.value = game.settings.given;
+			game.settings.guess = game.settings.given;
+		}
+		game.settings.given = event.target.value;
 	}
-}
-// Add event listeners to gamemode radio buttons
-for (let i of document.forms.modes.elements) {
-	i.addEventListener("click", gameMode);
-}
+	// Add event listeners to given radio buttons
+	for (let i of document.forms.givens.elements) {
+		i.addEventListener("click", chooseGiven);
+	}
 
-/**The function that runs when one of the theme options is selected */
-function setTheme(event) {
-	if (game.settings.theme != event.target.value) {
-		root.classList.add("trans-all");
-		root.setAttribute("theme", event.target.value);
-		setTimeout(() => {root.classList.remove("trans-all")}, 500);
-		game.settings.theme = event.target.value;
+	/**The function that runs when one of the gamemode options is selected */
+	function gameMode(event) {
+		switch (event.target.value) {
+			case "speed":
+				timeEl.classList.remove("hidden");
+				questionsEl.classList.add("hidden");
+				break;
+			case "timed":
+				timeEl.classList.add("hidden");
+				questionsEl.classList.remove("hidden");
+				break;
+			case "zen":
+				timeEl.classList.add("hidden");
+				questionsEl.classList.remove("hidden");
+				break;
+			case "endless":
+				timeEl.classList.add("hidden");
+				questionsEl.classList.add("hidden");
+				break;
+		}
 	}
-}
-// Add event listeners to theme radio buttons
-for (let i of document.forms.themes.elements) {
-	i.addEventListener("click", setTheme);
-}
+	// Add event listeners to gamemode radio buttons
+	for (let i of document.forms.modes.elements) {
+		i.addEventListener("click", gameMode);
+	}
 
-// Add event listener to start button
-startEl.addEventListener("click", () => {
-	game.start();
-});
+	/**The function that runs when one of the theme options is selected */
+	function setTheme(event) {
+		if (game.settings.theme != event.target.value) {
+			root.classList.add("trans-all");
+			root.setAttribute("theme", event.target.value);
+			setTimeout(() => {root.classList.remove("trans-all")}, 500);
+			game.settings.theme = event.target.value;
+		}
+	}
+	// Add event listeners to theme radio buttons
+	for (let i of document.forms.themes.elements) {
+		i.addEventListener("click", setTheme);
+	}
 
-/**The function that runs when one of the answer buttons is pressed */
-function onAnswer(event) {
-	if (event.target.getAttribute("position") == game.ansPos) {
-		++game.right;
-	} else {
-		++game.wrong;
-		event.target.classList.add("wrong");
-	}
-	document.querySelector(`[position="${game.ansPos}"]`).classList.add("right");
-	game.updateScore();
-	++game.counter[0];
-	game.updateCounter();
-	for (let i of options) {
-		i.disabled = true;
-		if (game.settings.guess != "color")
-			i.style["background"] = i.innerHTML;
-		else guessBoxEl.style["background"] = guessBoxEl.innerHTML;
-	}
-	setTimeout(() => {
+	// Add event listener to start button
+	startEl.addEventListener("click", () => {
+		game.start();
+	});
+
+	/**The function that runs when one of the answer buttons is pressed */
+	function onAnswer(event) {
+		if (event.target.getAttribute("position") == game.ansPos) {
+			++game.right;
+		} else {
+			++game.wrong;
+			event.target.classList.add("wrong");
+		}
+		document.querySelector(`[position="${game.ansPos}"]`).classList.add("right");
+		game.updateScore();
+		++game.counter[0];
+		game.updateCounter();
 		for (let i of options) {
+			i.disabled = true;
 			if (game.settings.guess != "color")
-				i.removeAttribute("style");
-			else guessBoxEl.removeAttribute("style");
-			i.classList.remove("wrong");
-			i.classList.remove("right");
-			i.disabled = false;
+				i.style["background"] = i.innerHTML;
+			else guessBoxEl.style["background"] = guessBoxEl.innerHTML;
 		}
-		if (game.counter[0] != game.counter[1])
-			game.nextQuestion();
-		else {
-			game.finish();
-		}
-	}, 400);
-}
-// Add event listeners to option buttons
-for (let i of options) {
-	i.addEventListener("click", onAnswer);
-}
+		setTimeout(() => {
+			for (let i of options) {
+				if (game.settings.guess != "color")
+					i.removeAttribute("style");
+				else guessBoxEl.removeAttribute("style");
+				i.classList.remove("wrong");
+				i.classList.remove("right");
+				i.disabled = false;
+			}
+			if (game.counter[0] != game.counter[1])
+				game.nextQuestion();
+			else {
+				game.finish();
+			}
+		}, 400);
+	}
+	// Add event listeners to option buttons
+	for (let i of options) {
+		i.addEventListener("click", onAnswer);
+	}
+})();
 
 var game = new Game(new Settings());
