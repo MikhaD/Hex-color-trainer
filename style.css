@@ -90,12 +90,10 @@ button {
 h1 {
 	font-size: var(--header-element) !important;
 	text-align: center;
-	margin: auto;
+	margin: 0 auto 0 auto;
 }
 
-h2 {
-	white-space: nowrap;
-	overflow: hidden;
+h3 {
 	font-size: 2rem !important;
 	margin-bottom: 0.5rem;
 }
@@ -129,7 +127,7 @@ h2 {
 	font-size: 1.6rem;
 }
 
-#logo {
+#settings-cog {
 	height: var(--header-element);
 	width: var(--header-element);
 	cursor: pointer;
@@ -149,7 +147,7 @@ input[type="checkbox"], input[type="radio"] { display: none }
 
 .m { fill: var(--foreground) }
 
-input[type="checkbox"]:checked ~ #logo .cog {
+input[type="checkbox"]:checked ~ #settings-cog .cog {
 	transform: rotate(135deg);
 }
 
@@ -157,41 +155,48 @@ main {
 	flex-grow: 1;
 	display: grid;
 	grid-template-columns: 5fr 8fr;
+	overflow-x: hidden;
 }
 
 #settings {
-	width: 0;
-	transition: width 0.8s ease-in-out;
+	padding-top: 1rem;
+	width: 100%;
+	height: 100%;
+	transition: top 0.8s ease-in-out;
 	background: var(--over);
 	box-shadow: 2px 2px 5px rgba(0, 0, 0, var(--box-shadow-opacity));
-	position: absolute;
-	right: 0; bottom: 0;
-	top: var(--header-height);
+	position: fixed;
+	top: 100vh;
 	z-index: 99;
 
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
-#settings[open="true"] { width: var(--settings-width) }
+#settings[open="true"] { top: 0 }
+
+#close-settings {
+	font-size: 4rem;
+	font-weight: bold;
+	position: absolute;
+	right: 4rem;
+	top: 1.5rem;
+	cursor: pointer;
+}
 
 .setting {
 	display: block;
 	width: 100%;
 	padding: 2rem 4rem 1rem 4rem;
-	opacity: 0;
 	text-align: center;
-	transition: opacity 0.8s ease-in-out;
 }
-
-#settings[open="true"] .setting { opacity: 100% }
 
 .setting-options {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-	transition: opacity 0.5s linear;
 }
 
 .setting-options[name="time"] {column-gap: 2rem}
@@ -225,13 +230,7 @@ input[type="radio"]:checked + .setting-option {
 	font-size: 1.2rem;
 	position: absolute;
 	bottom: 1rem;
-	white-space: nowrap;
-	overflow: hidden;
-	opacity: 0;
-	transition: opacity 0.8s ease-in-out;
 }
-
-#settings[open="true"] #signiture { opacity: 100% }
 
 #themes {
 	position: absolute;
@@ -261,7 +260,6 @@ input[type="radio"]:checked + .setting-option {
 
 .flipper-sides * {
 	position: absolute;
-	/* top: 0; right: 0; bottom: 0; left: 0; */
 	backface-visibility: hidden;
 	width: 100%;
 	height: 100%;
@@ -278,9 +276,13 @@ input[type="radio"]:checked + .setting-option {
 }
 
 #info-box {
-	/* background: var(--over); */
-	background: linear-gradient(red, yellow);
+	padding: 0.5rem;
+	background: var(--over);
 	border: calc(var(--box-outline)/2) solid var(--foreground);
+	display: grid;
+	place-items: center;
+	grid-template: 2fr 1fr/repeat(6, 1fr);
+	gap: 0.5rem 1rem;
 }
 
 .flipper-back { transform: rotateX(-180deg) }
@@ -289,10 +291,55 @@ input[type="radio"]:checked + .setting-option {
 
 .flipper.flipped .flipper-sides { transform: rotateX(.5turn) }
 
+.setting-info {
+	grid-row: 1/2;
+	font-weight: 600;
+	width: unset;
+	height: unset;
+}
+
+#info-mode { grid-column: 1/3 }
+
+#info-gg {
+	grid-column: 3/5;
+	width: 100%; height:100%;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#info-gg span {
+	margin: 0 0.1rem 0 0.1rem;
+	position: relative;
+	width: unset;
+	height: unset;
+}
+
+#info-difficulty { grid-column: 5/7 }
+
+.info-btn {
+	font-size: 1.6rem !important;
+	font-weight: 500;
+	width: 100%;
+	height: 100%;
+}
+
+#info-reset {
+	grid-row: 2/3;
+	grid-column: 1/4;
+}
+
+#info-stop {
+	grid-row: 2/3;
+	grid-column: 4/7;
+}
+
 #timer {
 	color: var(--foreground);
 	font-size: 7rem;
 	font-weight: 600;
+	/* width: 100%;
+	height: 100%; */
 }
 
 #progress {
@@ -400,6 +447,7 @@ html.trans-all, html.trans-all * {
 		row-gap: 0.5rem;
 		padding: 0 1rem 0 1rem;
 	}
+	#info-box {	grid-template: 2fr 3fr/repeat(6, 1fr) }
 	#timer { font-size: 4.5rem }
 	#progress { grid-template-rows: 3fr 2fr; }
 	#counter {

@@ -12,18 +12,18 @@
 <body>
 	<header>
 		<h1 class="text rainbow">GUESS THE <span class="guess">HEX</span></h1>
-		<label for="logo-check">
-			<input id="logo-check" type="checkbox">
-			<svg id="logo" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" tabindex="0">
-				<path class="cog" fill-rule="evenodd" d="M53.706 0h-7.41l-2.085 5.537-5.878 1.17-4.044-4.32-6.845 2.835.192 5.914-4.983 3.33-5.39-2.443-5.24 5.24 2.44 5.4-3.33 4.983-5.913-.195L2.4 34.287l4.318 4.046-1.17 5.878-5.538 2.083v7.41l5.537 2.085 1.17 5.878L2.4 65.713l2.835 6.845 5.913-.195 3.33 4.983-2.44 5.4 5.24 5.24 5.39-2.443 4.983 3.33-.192 5.914 6.845 2.835 4.044-4.32 5.878 1.17L46.297 100h7.41l2.083-5.538 5.878-1.17 4.046 4.318 6.845-2.835-.195-5.913 4.983-3.33 5.4 2.44 5.24-5.24-2.443-5.39 3.33-4.983 5.914.192 2.835-6.845-4.32-4.044 1.17-5.878L100 53.703v-7.41l-5.538-2.083-1.17-5.878 4.32-4.044-2.835-6.845-5.914.192-3.33-4.983 2.443-5.39-5.24-5.24-5.4 2.44-4.983-3.33.195-5.913-6.845-2.835-4.046 4.318-5.878-1.17L53.706 0zM50 83.213c18.343 0 33.214-14.87 33.214-33.213S68.344 16.787 50 16.787 16.787 31.657 16.787 50 31.657 83.213 50 83.213z" fill="#000"/>
-				<path class="cutout" d="M71.283 40.822c6.196 4.55 6.196 13.806 0 18.356L-1.69 112.77V-12.77l72.973 53.593z" fill="#fff"/>
-				<path class="m" d="M37.145 24.086H47.35v51.828h-7.03v-40.58l-12.873 40.58-12.874-40.58v40.58H7.54V24.086h10.205l9.7 31.977 9.7-31.977z" fill="#000"/>
+		<label for="settings-check">
+			<input id="settings-check" type="checkbox">
+			<svg id="settings-cog" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 131 131" tabindex="0">
+				<path class="cog" fill-rule="evenodd" d="M130.648 75.312v-20l-16.6-2.552c-1.176-4.55-2.977-8.85-5.306-12.8l9.928-13.538-14.14-14.142L91 22.207a49.7 49.7 0 0 0-12.8-5.306L75.648.312h-20L53.096 16.9a49.7 49.7 0 0 0-12.801 5.306L26.757 12.28 12.615 26.42l9.928 13.538a49.63 49.63 0 0 0-5.306 12.8L.648 55.312v20l16.6 2.552c1.177 4.55 2.978 8.85 5.306 12.8l-9.928 13.538 14.142 14.142 13.538-9.928a49.63 49.63 0 0 0 12.8 5.306l2.552 16.6h20l2.552-16.6c4.55-1.176 8.85-2.977 12.8-5.306l13.54 9.928 14.142-14.142-9.928-13.538a49.68 49.68 0 0 0 5.306-12.8l16.6-2.552zm-95-10c0 16.57 13.432 30 30 30s30-13.43 30-30-13.43-30-30-30-30 13.43-30 30z" fill="#000"/>
 			</svg>
 		</label>
 		</header>
 		<aside id="settings" open="false">
+			<h1 class="text rainbow">SETTINGS</h1>
+			<span class="text" id="close-settings">×</span>
 			<section class="setting">
-				<h2 class="text">Guess</h2>
+				<h3 class="text">Guess</h3>
 				<form class="setting-options" name="guesses">
 					<input type="radio" name="guess" id="guess-hex" value="hex">
 					<label class="setting-option guess" for="guess-hex">HEX</label>
@@ -36,7 +36,7 @@
 				</form>
 			</section>
 			<section class="setting">
-				<h2 class="text">Given</h2>
+				<h3 class="text">Given</h3>
 				<form class="setting-options" name="givens">
 					<input type="radio" name="given" id="given-hex" value="hex">
 					<label class="setting-option given" for="given-hex">HEX</label>
@@ -49,7 +49,7 @@
 				</form>
 			</section>
 			<section class="setting">
-				<h2 class="text">Game Mode</h2>
+				<h3 class="text">Game Mode</h3>
 				<form class="setting-options" name="modes">
 					<input type="radio" name="gameMode" id="speed" value="speed">
 					<label class="setting-option" for="speed">Speed</label>
@@ -62,7 +62,7 @@
 				</form>
 			</section>
 			<section class="setting">
-				<h2 class="text">Difficulty</h2>
+				<h3 class="text">Difficulty</h3>
 				<form class="setting-options" name="difficulties">
 					<input type="radio" name="difficulty" id="1" value="1">
 					<label class="setting-option" for="1">1</label>
@@ -79,20 +79,20 @@
 				</form>
 			</section>
 			<section class="setting hidden" id="time">
-				<h2 class="text">Time</h2>
+				<h3 class="text">Time</h3>
 				<form class="setting-options" name="time">
 					<input type="number" name="minutes" class="text input" id="minutes" placeholder="minutes" max="10" min="0">
 					<input type="number" name="seconds" class="text input" id="seconds" placeholder="seconds" max="59" min="0">
 				</form>
 			</section>
 			<section class="setting" id="questions">
-				<h2 class="text">Number of Questions</h2>
+				<h3 class="text">Number of Questions</h3>
 				<form name="numQuestions">
 					<input type="number" name="questions" class="text input" placeholder="questions" max="999" min="1">
 				</form>
 			</section>
 			<section class="setting" id="themes">
-				<h2 class="text">Color Theme</h2>
+				<h3 class="text">Color Theme</h3>
 				<form class="setting-options" name="themes">
 					<input type="radio" name="theme" id="light" value="light">
 					<label class="setting-option" for="light">Light</label>
@@ -107,7 +107,17 @@
 				<div class="flipper hover">
 					<div class="flipper-sides" id="gb-flip">
 						<div class="flipper-front text" id="guess-box"></div>
-						<div class="flipper-back text" id="info-box"></div>
+						<div class="flipper-back text" id="info-box">
+							<span class="setting-info" id="info-mode">Mode: Speed</span>
+							<div class="setting-info" id="info-gg">
+								<span id="info-guess">Hex</span>
+								<span>/</span>
+								<span id="info-given">Color</span>
+							</div>
+							<span class="setting-info" id="info-difficulty">Mode: Speed</span>
+							<button class="btn info-btn hidden" onclick="game.reset()" id="info-reset">RESET</button>
+							<button class="btn info-btn hidden" onclick="game.end()" id="info-stop">STOP</button>
+						</div>
 					</div>
 				</div>
 				<div class="flipper" id="timer-start">
@@ -140,7 +150,7 @@
 			<h1 class="text" id="modal-title">WELCOME!</h1>
 			<div class="text" id="modal-content">
 				<p>I made this game to improve my ability to recognise colors by their hexadecimal values and vice verca.</p>
-				<p>Click on the logo in the corner to access the settings and reset the game.</p>
+				<p>Click on the box above the start button to see your settings mid game.</p>
 			</div>
 			<button class="text btn" id="modal-button">CLOSE</button>
 		</div>

@@ -39,40 +39,44 @@ const localStorageAccessable = (() => {
 })();
 
 // ----------------------------------------- Flipping tile ----------------------------------------
-(() => {
-	var flipper = document.querySelector(".flipper");
-	var flipped = false;
-	var hover = false;
-	var TimeoutOver = true;
-	var flipBack;
-	function resetFlip() {
-		if (!hover) {
-			flipper.classList.remove("flipped");
-			flipper.classList.add("hover");
-			flipped = false;
-		}
-		TimeoutOver = true;
+var flipper = document.querySelector(".flipper");
+var flipped = false;
+var hover = false;
+var TimeoutOver = true;
+var flipBack;
+function flip() {
+	flipper.classList.add("flipped");
+	flipper.classList.remove("hover");
+	clearTimeout(flipBack);
+	flipBack = setTimeout(unFlip, 4000);
+	TimeoutOver = false;
+	flipped = true;
+}
+
+function unFlip() {
+	if (!hover) {
+		flipper.classList.remove("flipped");
+		flipper.classList.add("hover");
+		flipped = false;
 	}
-	flipper.addEventListener("click", () => {
-		if (flipped) {
-			hover = false;
-			resetFlip();
-		} else {
-			flipper.classList.add("flipped");
-			flipper.classList.remove("hover");
-			clearTimeout(flipBack);
-			flipBack = setTimeout(resetFlip, 4000);
-			TimeoutOver = false;
-			flipped = true;
-		}
-	});
-	flipper.addEventListener("mouseover", () => {hover = true});
-	flipper.addEventListener("mouseout", () => {
+	clearTimeout(flipBack);
+	TimeoutOver = true;
+}
+
+flipper.addEventListener("click", () => {
+	if (flipped) {
 		hover = false;
-		if (TimeoutOver)
-			resetFlip();
-	});
-})();
+		unFlip();
+	} else {
+		flip();
+	}
+});
+flipper.addEventListener("mouseover", () => {hover = true});
+flipper.addEventListener("mouseout", () => {
+	hover = false;
+	if (TimeoutOver)
+		unFlip();
+});
 
 // -------------------------------------------- Classes -------------------------------------------
 class Utils {
@@ -235,8 +239,17 @@ class Settings {
 	}
 	reset() {
 		if (localStorageAccessable) {
-
+			localStorage.removeItem("guess");
+			localStorage.removeItem("given");
+			localStorage.removeItem("mode");
+			localStorage.removeItem("difficulty");
+			localStorage.removeItem("questions");
+			localStorage.removeItem("mins");
+			localStorage.removeItem("secs");
+			localStorage.removeItem("theme");
 		}
+		for (let i in this)
+			this[i] = Settings.defaults[i];
 	}
 }
 
@@ -312,7 +325,9 @@ class Game {
 		this.wrong = 0;
 		this.updateScore();
 		this.settings.mode = document.forms.modes.gameMode.value;
+		document.querySelector("#info-mode").textContent = "Mode: " + this.settings.mode;
 		this.settings.difficulty = document.forms.difficulties.difficulty.value;
+		document.querySelector("#info-difficulty").textContent = "Difficulty: " + ((this.settings.difficulty < Difficulty.max) ? this.settings.difficulty : "max");
 		if (this.difficulty == undefined || this.settings.difficulty != this.difficulty.difficulty)
 			this.difficulty = new Difficulty(this.settings.difficulty);
 		this.settings.questions = document.forms.numQuestions.questions.value;
@@ -345,6 +360,8 @@ class Game {
 		document.querySelector("#timer-start").classList.remove("flipped");
 		this.updateCounter();
 		Utils.setOptions(true);
+		for (let i of document.querySelectorAll(".info-btn"))
+			i.classList.add("hidden");
 		this.gameReset = true;
 	}
 	start() {
@@ -368,6 +385,10 @@ class Game {
 		Utils.setOptions(false, false);
 		this.nextQuestion();
 		this.gameReset = false;
+		for (let i of document.querySelectorAll(".info-btn")) {
+			i.classList.remove("hidden");
+			console.log("here");
+		}
 	}
 	end() {
 		clearInterval(this.timer);
@@ -522,16 +543,20 @@ class Color {
 		game.reset();
 	});
 
-	// Add event listener to logo
-	document.querySelector("#logo").addEventListener("click", () => {
-		document.querySelector("#settings").setAttribute("open", !document.querySelector("#logo-check").checked);
-		startEl.disabled = !document.querySelector("#logo-check").checked;
-		if (document.querySelector("#logo-check").checked) {
-			game.reset();
-			game.settings.store();
-		} else {
-			game.end();
-		}
+	// Add event listener to settings cog
+	document.querySelector("#settings-cog").addEventListener("click", () => {
+		document.querySelector("#settings").setAttribute("open", true);
+		game.end();
+	});
+
+	// Add event listener to close settings ×
+	document.querySelector("#close-settings").addEventListener("click", () => {
+		document.querySelector("#settings").setAttribute("open", false);
+		document.querySelector("#settings-check").checked = false;
+		game.reset();
+		game.settings.store();
+		setTimeout(flip, 500);
+		setTimeout(unFlip, 2500);
 	});
 
 	/** The function triggered when one of the guess options is selected */
@@ -544,6 +569,7 @@ class Color {
 			game.settings.guess = event.target.value;
 		}
 		Utils.updateTitle(event.target.value);
+		document.querySelector("#info-guess").textContent = event.target.value;
 	}
 	// Add event listeners to guess radio buttons
 	for (let i of document.forms.guesses.elements) {
@@ -559,6 +585,7 @@ class Color {
 			}
 			game.settings.given = event.target.value;
 		}
+		document.querySelector("#info-given").textContent = event.target.value;
 	}
 	// Add event listeners to given radio buttons
 	for (let i of document.forms.givens.elements) {
@@ -585,6 +612,7 @@ class Color {
 				questionsEl.classList.add("hidden");
 				break;
 		}
+		document.querySelector("#info-mode").textContent = event.target.value;
 	}
 	// Add event listeners to gamemode radio buttons
 	for (let i of document.forms.modes.elements) {
