@@ -12,6 +12,7 @@
 	--padding: 1rem;
 	--header-element: calc(var(--header-height) - 2*var(--padding));
 	--settings-width: 50rem;
+	--box-outline: 1.5rem;
 	--box-shadow-opacity: 50%;
 	--foreground: #000000;
 	--btn-foreground: var(--background);
@@ -30,20 +31,14 @@
 :root[theme="dark"] {
 	--box-shadow-opacity: 80%;
 	--foreground: #afafaf;
-	--background: #121119;
+	--background: #121217;
 	--btn-foreground: var(--background);
-	--over: #15141f;
-	--grad-in: #1e1b2d;
+	--over: #16151e;
+	--grad-in: #1f1d2b;
 	--grad-out: var(--background);
 	--accent: #88389c;
 	--right: #207e20;
 	--wrong: #8f2424;
-}
-
-button {
-	all: unset;
-	text-align: center;
-	cursor: pointer;
 }
 
 body {
@@ -60,6 +55,12 @@ header {
 	height: var(--header-height);
 }
 
+button {
+	all: unset;
+	text-align: center;
+	cursor: pointer;
+}
+
 .mono-text {
 	font-family: 'Courier Prime', monospace;
 	display: inline-flex;
@@ -73,10 +74,30 @@ header {
 	font-size: 1.6rem;
 }
 
+.btn {
+	font-size: 2.5rem;
+	color: var(--btn-foreground);
+	background: var(--accent);
+	font-weight: 700;
+	border-radius: 0.25rem;
+	transition: all 0.08s linear;
+}
+
+.btn:hover { filter: hue-rotate(10deg) }
+
+.btn:active { transform: scale(0.95) }
+
 h1 {
 	font-size: var(--header-element) !important;
 	text-align: center;
 	margin: auto;
+}
+
+h2 {
+	white-space: nowrap;
+	overflow: hidden;
+	font-size: 2rem !important;
+	margin-bottom: 0.5rem;
 }
 
 .rainbow {
@@ -95,9 +116,7 @@ h1 {
 	outline: none;
 }
 
-input[type="checkbox"], input[type="radio"] {
-	display: none;
-}
+input[type="checkbox"], input[type="radio"] { display: none }
 
 .cog {
 	fill: var(--foreground);
@@ -108,7 +127,7 @@ input[type="checkbox"], input[type="radio"] {
 
 .cutout { fill: var(--background) }
 
-.m { fill: var(--foreground); }
+.m { fill: var(--foreground) }
 
 input[type="checkbox"]:checked ~ #logo .cog {
 	transform: rotate(135deg);
@@ -126,9 +145,9 @@ main {
 	background: var(--over);
 	box-shadow: 2px 2px 5px rgba(0, 0, 0, var(--box-shadow-opacity));
 	position: absolute;
-	right: 0;
-	bottom: 0;
+	right: 0; bottom: 0;
 	top: var(--header-height);
+	z-index: 99;
 
 	display: flex;
 	flex-direction: column;
@@ -148,13 +167,6 @@ main {
 }
 
 #settings[open="true"] .setting { opacity: 100% }
-
-h2 {
-	white-space: nowrap;
-	overflow: hidden;
-	font-size: 2rem !important;
-	margin-bottom: 0.5rem;
-}
 
 .setting-options {
 	display: grid;
@@ -213,36 +225,49 @@ input[type="radio"]:checked + .setting-option {
 	grid-template-rows: 1fr 1fr 1fr;
 }
 
+.flipper {
+	cursor: pointer;
+	perspective: 100rem;
+	color: var(--foreground);
+}
+
+.flipper-sides {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	transition: transform 0.8s ease-in-out;
+	transform-style: preserve-3d;
+}
+
+.flipper-sides * {
+	position: absolute;
+	/* top: 0; right: 0; bottom: 0; left: 0; */
+	backface-visibility: hidden;
+	width: 100%;
+	height: 100%;
+}
+
 #guess-box {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border: 1.5rem solid var(--foreground);
+	display: grid;
+	place-items: center;
+	border: var(--box-outline) solid var(--foreground);
 	border-radius: 0.25rem;
 	font-size: 3rem;
 	font-weight: 600;
-	color: var(--foreground);
-	transition: all 0.1s linear;
+	transition: background-color 0.1s linear;
 }
 
-.btn {
-	font-size: 2.5rem;
-	color: var(--btn-foreground);
-	background: var(--accent);
-	font-weight: 700;
-	border-radius: 0.25rem;
-	transition: all 0.08s linear;
+#info-box {
+	/* background: var(--over); */
+	background: linear-gradient(red, yellow);
+	border: calc(var(--box-outline)/2) solid var(--foreground);
 }
 
-.btn:hover {
-	font-size: 2.7rem;
-	filter: hue-rotate(10deg);
-}
+.flipper-back { transform: rotateX(-180deg) }
 
-.btn:active {
-	font-size: 2.3rem;
-	margin: 0.5rem;
-}
+.flipper.hover:hover #gb-flip { transform: rotateX(20deg) }
+
+.flipper.flipped .flipper-sides { transform: rotateX(.5turn) }
 
 #timer {
 	color: var(--foreground);
@@ -281,6 +306,7 @@ input[type="radio"]:checked + .setting-option {
 	color: var(--foreground);
 	font-size: 5rem;
 	grid-column: 1/3;
+	padding-top: 7rem;
 }
 
 #options {
@@ -302,8 +328,7 @@ input[type="radio"]:checked + .setting-option {
 }
 
 #options button:active {
-	margin: 0.5rem;
-	font-size: 1.9rem;
+	transform: scale(0.95);
 }
 
 #modal {
@@ -328,9 +353,7 @@ input[type="radio"]:checked + .setting-option {
 	height: 50%;
 }
 
-#modal-content {
-	padding: 1rem;
-}
+#modal-content { padding: 1rem }
 
 .hidden { display: none !important; }
 
@@ -341,34 +364,34 @@ html.trans-all, html.trans-all * {
 
 @media(max-width: 900px) {
 	main { grid-template: 5fr 8fr / 1fr }
-	:root { --settings-width: 100% }
+	:root {
+		--settings-width: 100%;
+		--box-outline: 0.8rem;
+	}
 	#controls {
 		row-gap: 0.5rem;
 		padding: 0 1rem 0 1rem;
 	}
-	#guess-box { border-width: 0.8rem }
-	#timer { font-size: 5rem }
+	#timer { font-size: 4.5rem }
 	#progress { grid-template-rows: 3fr 2fr; }
-	#counter { font-size: 3rem }
+	#counter {
+		font-size: 3rem;
+		padding-top: 0;
+	}
 	#options button { font-size: 1.6rem }
-	#options button:active { font-size: 1.5rem }
 	.mono-text { font-size: 1.8rem }
 }
 @media(max-width: 470px) {
 	#options button { font-size: 1.3rem }
-	#options button:active { font-size: 1.2rem }
 	#modal-body {
 	grid-template-rows: 1fr 6fr 2fr;
 	width: 80%;
 	}
-	#modal-button { font-size: 2rem; }
-	#modal-button:hover { font-size: 2.1rem; }
-	#modal-button:active { font-size: 1.9rem; }
 }
 @media(max-width: 400px) {
 	#options button { font-size: 1.1rem }
-	#options button:active { font-size: 1rem }
 	.text { font-size: 1.4rem }
+	.btn { font-size: 2rem }
 }
 @media(max-height: 550px) {
 	#controls { grid-template-rows: 3fr 2fr 3fr }

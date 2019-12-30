@@ -27,6 +27,42 @@ const startEl		= document.querySelector("#start");
 	resizeHeader();
 })();
 
+// ----------------------------------------- Flipping tile ----------------------------------------
+(() => {
+	var flipper = document.querySelector(".flipper");
+	var flipped = false;
+	var hover = false;
+	var TimeoutOver = true;
+	var flipBack;
+	function resetFlip() {
+		if (!hover) {
+			flipper.classList.remove("flipped");
+			flipper.classList.add("hover");
+			flipped = false;
+		}
+		TimeoutOver = true;
+	}
+	flipper.addEventListener("click", () => {
+		if (flipped) {
+			hover = false;
+			resetFlip();
+		} else {
+			flipper.classList.add("flipped");
+			flipper.classList.remove("hover");
+			clearTimeout(flipBack);
+			flipBack = setTimeout(resetFlip, 4000);
+			TimeoutOver = false;
+			flipped = true;
+		}
+	});
+	flipper.addEventListener("mouseover", () => {hover = true});
+	flipper.addEventListener("mouseout", () => {
+		hover = false;
+		if (TimeoutOver)
+			resetFlip();
+	});
+})();
+
 // -------------------------------------------- Classes -------------------------------------------
 class Utils {
 	/**
@@ -68,7 +104,7 @@ class Utils {
 				i.disabled = disabled;
 			if (reset) {
 			i.removeAttribute("style");
-			i.innerHTML = "";
+			i.textContent = "";
 			}
 		}
 	}
@@ -77,9 +113,15 @@ class Utils {
 		document.querySelector("title").innerText = `GUESS THE ${title.toUpperCase()}`;
 	}
 	static modal(title, value) {
-		document.querySelector("#modal-title").innerHTML = title;
+		document.querySelector("#modal-title").textContent = title;
 		document.querySelector("#modal-content").innerHTML = value;
 		document.querySelector("#modal").classList.remove("hidden");
+	}
+	static getElementByValue(array, value) {
+		for (let i of array) {
+			if (i.value == value)
+				return i;
+		}
 	}
 }
 
@@ -133,8 +175,6 @@ class Settings {
 	}
 	constructor() {
 		let couldRead = this.read();
-		console.log(couldRead);
-		
 		if (!couldRead) {
 			this.guess = Settings.defaults.guess;
 			this.given = Settings.defaults.given;
@@ -145,17 +185,14 @@ class Settings {
 			this.secs = Settings.defaults.secs;
 			this.theme = Settings.defaults.theme;
 		}
-		document.forms.guesses.guess.value = this.guess;
-		Utils.updateTitle(this.guess);
-		document.forms.givens.given.value = this.given;
-		document.forms.modes.gameMode.value = this.mode;
-		document.forms.difficulties.difficulty.value = this.difficulty;
+		Utils.getElementByValue(document.forms.guesses.guess, this.guess).click()
+		Utils.getElementByValue(document.forms.givens.given, this.given).click()
+		Utils.getElementByValue(document.forms.modes.gameMode, this.mode).click()
+		Utils.getElementByValue(document.forms.difficulties.difficulty, this.difficulty).click()
 		document.forms.numQuestions.questions.value = this.questions;
 		document.forms.time.minutes.value = this.mins;
 		document.forms.time.seconds.value = this.secs;
-		console.log(this.theme);
-		document.forms.themes.theme.value = this.theme;
-		// setTheme({"target":document.querySelector(`[value=${this.theme}`)});
+		Utils.getElementByValue(document.forms.themes.theme, this.theme).click()
 	}
 	store() {
 		try {
@@ -189,6 +226,9 @@ class Settings {
 		} catch (error) {
 			return false;
 		}
+	}
+	reset() {
+		
 	}
 }
 
@@ -227,30 +267,30 @@ class Game {
 				++this.time[0];
 			}
 		}
-		timerEl.innerHTML = this.time.map((el) => {return Utils.justifyR(el, 0, 2)}).join(":");
+		timerEl.textContent = this.time.map((el) => {return Utils.justifyR(el, 0, 2)}).join(":");
 	}
 	updateCounter() {
-		counterEl.innerHTML = Utils.justifyR(this.counter[0], 0, 2) + " / " + Utils.justifyR(this.counter[1], 0, 2);
+		counterEl.textContent = Utils.justifyR(this.counter[0], 0, 2) + " / " + Utils.justifyR(this.counter[1], 0, 2);
 	}
 	updateScore() {
-		rightEl.innerHTML = this.right;
-		wrongEl.innerHTML = this.wrong;
+		rightEl.textContent = this.right;
+		wrongEl.textContent = this.wrong;
 	}
 	/**Call the next question and set all the relevant html elements to their required values */
 	nextQuestion() {
 		this.color = new Color(Utils.genRgb());
 		this.ansPos = Utils.randInt(1, 9);
 		if (this.settings.given != "color")
-			guessBoxEl.innerHTML = this.color[this.settings.given];
+			guessBoxEl.textContent = this.color[this.settings.given];
 		else {
-			guessBoxEl.innerHTML = "";
+			guessBoxEl.textContent = "";
 			guessBoxEl.style["background"] = this.color.rgb;
 		}
 		for (let i = 0; i < options.length; ++i) {
 			options[i].removeAttribute("style");
-			options[i].innerHTML = "";
+			options[i].textContent = "";
 			if (this.settings.guess != "color") {
-				options[i].innerHTML = (i+1 != this.ansPos) ? new Color(this.difficulty.option(this.color))[this.settings.guess] : this.color[this.settings.guess];
+				options[i].textContent = (i+1 != this.ansPos) ? new Color(this.difficulty.option(this.color))[this.settings.guess] : this.color[this.settings.guess];
 			} else {
 				options[i].style["background"] = i+1 != this.ansPos ? new Color(this.difficulty.option(this.color)).hex : this.color.hex;
 			}
@@ -289,16 +329,14 @@ class Game {
 		}
 
 		guessBoxEl.removeAttribute("style");
-		guessBoxEl.innerHTML = "";
-		timerEl.classList.add("hidden");
-		timerEl.innerHTML = "";
-		startEl.classList.remove("hidden");
+		guessBoxEl.textContent = "";
+		timerEl.textContent = "";
+		document.querySelector("#timer-start").classList.remove("flipped");
 		this.updateCounter();
 		Utils.setOptions(true);
 	}
 	start() {
-		startEl.classList.add("hidden");
-		timerEl.classList.remove("hidden");
+		document.querySelector("#timer-start").classList.add("flipped");
 		switch (this.settings.mode) {
 			case "speed":
 				this.timer = setInterval(() => {
@@ -481,10 +519,10 @@ class Color {
 	// Add event listener to logo
 	document.querySelector("#logo").addEventListener("click", () => {
 		document.querySelector("#settings").setAttribute("open", !document.querySelector("#logo-check").checked);
-		// startEl.disabled = !document.querySelector("#logo-check").checked;
+		startEl.disabled = !document.querySelector("#logo-check").checked;
 		if (document.querySelector("#logo-check").checked) {
-			game.settings.store();
 			game.reset();
+			game.settings.store();
 		} else {
 			game.end();
 		}
@@ -492,11 +530,13 @@ class Color {
 
 	/** The function triggered when one of the guess options is selected */
 	function chooseGuess(event) {
-		if (event.target.value == game.settings.given) {
-			document.forms.givens.given.value = game.settings.guess;
-			game.settings.given = game.settings.guess;
+		if (game != undefined) {
+			if (event.target.value == game.settings.given) {
+				document.forms.givens.given.value = game.settings.guess;
+				game.settings.given = game.settings.guess;
+			}
+			game.settings.guess = event.target.value;
 		}
-		game.settings.guess = event.target.value;
 		Utils.updateTitle(event.target.value);
 	}
 	// Add event listeners to guess radio buttons
@@ -506,11 +546,13 @@ class Color {
 
 	/** The function triggered when one of the given options is selected */
 	function chooseGiven(event) {
-		if (event.target.value == game.settings.guess) {
-			document.forms.guesses.guess.value = game.settings.given;
-			game.settings.guess = game.settings.given;
+		if (game != undefined) {
+			if (event.target.value == game.settings.guess) {
+				document.forms.guesses.guess.value = game.settings.given;
+				game.settings.guess = game.settings.given;
+			}
+			game.settings.given = event.target.value;
 		}
-		game.settings.given = event.target.value;
 	}
 	// Add event listeners to given radio buttons
 	for (let i of document.forms.givens.elements) {
@@ -545,12 +587,13 @@ class Color {
 
 	/**The function that runs when one of the theme options is selected */
 	function setTheme(event) {
-		if (game.settings.theme != event.target.value) {
+		if (game != undefined && game.settings.theme != event.target.value) {
 			root.classList.add("trans-all");
-			root.setAttribute("theme", event.target.value);
 			setTimeout(() => {root.classList.remove("trans-all")}, 500);
-			game.settings.theme = event.target.value;
 		}
+		root.setAttribute("theme", event.target.value);
+		if (game != undefined)
+			game.settings.theme = event.target.value;
 	}
 	// Add event listeners to theme radio buttons
 	for (let i of document.forms.themes.elements) {
@@ -577,8 +620,8 @@ class Color {
 		for (let i of options) {
 			i.disabled = true;
 			if (game.settings.guess != "color")
-				i.style["background"] = i.innerHTML;
-			else guessBoxEl.style["background"] = guessBoxEl.innerHTML;
+				i.style["background"] = i.textContent;
+			else guessBoxEl.style["background"] = guessBoxEl.textContent;
 		}
 		setTimeout(() => {
 			for (let i of options) {

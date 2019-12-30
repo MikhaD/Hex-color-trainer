@@ -6,7 +6,6 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<link rel="stylesheet" href="style.css">
 	<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
-	<!-- <script src="game.js" defer></script> -->
 	<script src="game.js" defer></script>
 	<title>GUESS THE HEX</title>
 </head>
@@ -82,14 +81,14 @@
 			<section class="setting hidden" id="time">
 				<h2 class="text">Time</h2>
 				<form class="setting-options" name="time">
-					<input type="number" name="minutes" class="text input" id="minutes" placeholder="minutes" max="10" min="0" value="1">
-					<input type="number" name="seconds" class="text input" id="seconds" placeholder="seconds" max="59" min="0" value="0">
+					<input type="number" name="minutes" class="text input" id="minutes" placeholder="minutes" max="10" min="0">
+					<input type="number" name="seconds" class="text input" id="seconds" placeholder="seconds" max="59" min="0">
 				</form>
 			</section>
 			<section class="setting" id="questions">
 				<h2 class="text">Number of Questions</h2>
 				<form name="numQuestions">
-					<input type="number" name="questions" class="text input" placeholder="questions" max="999" min="1" value="10">
+					<input type="number" name="questions" class="text input" placeholder="questions" max="999" min="1">
 				</form>
 			</section>
 			<section class="setting" id="themes">
@@ -105,16 +104,23 @@
 		</aside>
 		<main>
 			<section id="controls">
-				<div class="text" id="guess-box"></div>
-				<!-- <div id="control-box"> -->
-				<button class="text btn" id="start">START</button>
-				<span class="mono-text hidden" id="timer"><!-- 00:00:00 --></span>
+				<div class="flipper hover">
+					<div class="flipper-sides" id="gb-flip">
+						<div class="flipper-front text" id="guess-box"></div>
+						<div class="flipper-back text" id="info-box"></div>
+					</div>
+				</div>
+				<div class="flipper" id="timer-start">
+					<div class="flipper-sides">
+						<button class="text btn flipper-front" id="start">START</button>
+						<span class="mono-text flipper-back" id="timer"></span>
+					</div>
+				</div>
 				<div id="progress">
 					<span class="mono-text" id="counter"></span>
 					<span class="mono-text" id="right"></span>
 					<span class="mono-text" id="wrong"></span>
 				</div>
-				<!-- </div> -->
 			</section>
 			<section id="options">
 				<button class="text" position="1" disabled></button>
