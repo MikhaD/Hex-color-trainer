@@ -2,7 +2,7 @@
 <html>
 <head>
 	<style>
-		* {
+		*, *::before, *::after {
 			margin: 0;
 			border: 0;
 			padding: 0;
@@ -27,14 +27,43 @@
 			background: #242426;
 			list-style-type: none;
 			cursor: pointer;
+			position: relative;
+			overflow: hidden;
 		}
 		li:hover { background: #292929 }
+		li::before {
+			content: "";
+			position: absolute;
+			width: 2.2rem;
+			height: 2.2rem;
+			border-radius: 50%;
+			border: 0.25rem solid var(--foreground);
+			left: 1rem;
+		}
+		li.hide::before {
+			background-color: var(--foreground);
+		}
 		.hide {
-			overflow: hidden;
-			transition: all 0.6s linear;
-			opacity: 0;
-			padding: 0 4rem 0 4rem;
-			height: 0;
+			white-space: nowrap;
+			animation: slideOut 1s ease-out, fade 0.5s forwards, shrink 0.2s 0.5s forwards;
+		}
+		@keyframes slideOut {
+			to {
+				margin-left: 100%;
+			}
+		}
+		@keyframes fade {
+			to {
+				opacity: 0;
+				margin-right: 0;
+			}
+		}
+		@keyframes shrink {
+			to {
+				height: 0;
+				padding: 0;
+				margin: 0;
+			}
 		}
 	</style>
 	<title>To Do</title>
@@ -43,10 +72,7 @@
 		<h1>To Do</h1>
 		<ul>
 			<li>Detect if user has the developer tools open</li>
-			<li>Flash timer red in the last 10 seconds of speed</li>
-			<li>Only show welcome modal if the player is new (put warning about localstorage in modal if their's isn't being allowed)</li>
 			<li>Make end alerts into end modals</li>
-			<li>Make single use timing functions into anonymous functions</li>
 			<li>Toggle settings menu to what it isn't when settings is pressed, to account for different behavior across browsers.</li>
 			<li>Timer is always a few ms off on screen, but is up to date in alert</li>
 			<li>Make display period longer in untimed gamemodes, or make it a setting</li>
@@ -59,7 +85,7 @@
 	<script>
 		function vanish(event) {
 			event.target.classList.add("hide");
-			setTimeout(() => {event.target.remove()}, 1000);
+			setTimeout(() => {event.target.remove()}, 700);
 		}
 
 		for (let i of document.querySelectorAll("li")) {

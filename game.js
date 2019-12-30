@@ -10,6 +10,17 @@ const rightEl		= document.querySelector("#right");
 const wrongEl		= document.querySelector("#wrong");
 const startEl		= document.querySelector("#start");
 
+const localStorageAccessable = (() => {
+	try {
+		localStorage.setItem("test", true);
+		localStorage.removeItem("test");
+		return true;
+	} catch (error) {
+		console.warn("Unable to access localStorage");
+		return false;
+	}
+})();
+
 // ---------------------------------------- Adjusting Title ---------------------------------------
 (() => {
 	var headerHeight;
@@ -174,8 +185,8 @@ class Settings {
 		"theme": "light"
 	}
 	constructor() {
-		let couldRead = this.read();
-		if (!couldRead) {
+		this.read();
+		if (!localStorageAccessable) {
 			this.guess = Settings.defaults.guess;
 			this.given = Settings.defaults.given;
 			this.mode = Settings.defaults.mode;
@@ -185,17 +196,17 @@ class Settings {
 			this.secs = Settings.defaults.secs;
 			this.theme = Settings.defaults.theme;
 		}
-		Utils.getElementByValue(document.forms.guesses.guess, this.guess).click()
-		Utils.getElementByValue(document.forms.givens.given, this.given).click()
-		Utils.getElementByValue(document.forms.modes.gameMode, this.mode).click()
-		Utils.getElementByValue(document.forms.difficulties.difficulty, this.difficulty).click()
+		Utils.getElementByValue(document.forms.guesses.guess, this.guess).click();
+		Utils.getElementByValue(document.forms.givens.given, this.given).click();
+		Utils.getElementByValue(document.forms.modes.gameMode, this.mode).click();
+		Utils.getElementByValue(document.forms.difficulties.difficulty, this.difficulty).click();
 		document.forms.numQuestions.questions.value = this.questions;
 		document.forms.time.minutes.value = this.mins;
 		document.forms.time.seconds.value = this.secs;
-		Utils.getElementByValue(document.forms.themes.theme, this.theme).click()
+		Utils.getElementByValue(document.forms.themes.theme, this.theme).click();
 	}
 	store() {
-		try {
+		if (localStorageAccessable) {
 			localStorage.setItem("guess", this.guess);
 			localStorage.setItem("given", this.given);
 			localStorage.setItem("mode", this.mode);
@@ -204,12 +215,10 @@ class Settings {
 			localStorage.setItem("mins", this.mins);
 			localStorage.setItem("secs", this.secs);
 			localStorage.setItem("theme", this.theme);
-		} catch (error) {
-			console.warn("Unable to store settings in localStorage");
 		}
 	}
 	read() {
-		try {
+		if (localStorageAccessable) {
 			this.guess = localStorage.getItem("guess");
 			this.given = localStorage.getItem("given");
 			this.mode = localStorage.getItem("mode");
@@ -222,13 +231,12 @@ class Settings {
 				if (this[i] == null || this[i] == undefined)
 					this[i] = Settings.defaults[i];
 			}
-			return true;
-		} catch (error) {
-			return false;
 		}
 	}
 	reset() {
-		
+		if (localStorageAccessable) {
+
+		}
 	}
 }
 
@@ -255,6 +263,8 @@ class Game {
 				this.time[1] = 59;
 				--this.time[0];
 			}
+			if (this.time[0] == 0 && this.time[1] <= 10 && this.time[2] == 0)
+				timerEl.classList.toggle("red");
 		}
 		else {
 			++this.time[2];
@@ -331,25 +341,20 @@ class Game {
 		guessBoxEl.removeAttribute("style");
 		guessBoxEl.textContent = "";
 		timerEl.textContent = "";
+		timerEl.classList.remove("red");
 		document.querySelector("#timer-start").classList.remove("flipped");
 		this.updateCounter();
 		Utils.setOptions(true);
+		this.gameReset = true;
 	}
 	start() {
+		if (!this.gameReset)
+			this.reset();
 		document.querySelector("#timer-start").classList.add("flipped");
 		switch (this.settings.mode) {
 			case "speed":
 				this.timer = setInterval(() => {
 					this.updateTime("-");
-					if (this.time[0] == 0 && this.time[1] <= 10 && this.time[3] == 0) {
-						if (this.time[1] % 2 == 1) {
-							timerEl.classList.add("red");
-							console.log("added red");
-						} else {
-							timeEl.classList.remove("red");
-							console.log("removed red");	
-						}
-					}
 					if (this.time.every((val) => {return val == 0}))
 						this.finish();
 				}, 10);
@@ -362,6 +367,7 @@ class Game {
 		}
 		Utils.setOptions(false, false);
 		this.nextQuestion();
+		this.gameReset = false;
 	}
 	end() {
 		clearInterval(this.timer);
@@ -645,4 +651,21 @@ class Color {
 	}
 })();
 
+// ---------------------------------------- Initialize Game ---------------------------------------
 var game = new Game(new Settings());
+
+// ----------------------------------------- Welcome Modal ----------------------------------------
+(() => {
+	if (localStorageAccessable) {
+		if (localStorage.getItem("new") != "false") {
+			localStorage.setItem("new", "false");
+			document.querySelector("#modal").classList.remove("hidden");
+		}
+	} else {
+		let temp = document.createElement("div");
+		temp.innerHTML = "Unable to access localStorage to store settings.<br>If you want your settings to be remembered between sessions, go to<br>Settings > Additional Settings > Privacy and Security > Site Settings > Cookies<br>in your browser and add this site to the allowed list.";
+		temp.classList.add("warning");
+		document.querySelector("#modal-content").append(temp);
+		document.querySelector("#modal").classList.remove("hidden");
+	}
+})();

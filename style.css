@@ -107,7 +107,27 @@ h2 {
 	-webkit-text-fill-color: transparent;
 }
 
-.red { color: var(--wrong) !important}
+.red { color: red !important}
+
+.warning {
+	position: relative;
+	padding: 1rem;
+	color: rgb(165, 0, 0);
+	background-color: #fac80080;
+	border-left: 4rem solid #fac800;
+}
+
+.warning::before {
+	content: "\26A0";
+	position: absolute;
+	display: flex;
+	align-items: center;
+	top: 0;
+	left: -3rem;
+	height: 100%;
+	font-family: 'Roboto', sans-serif;
+	font-size: 1.6rem;
+}
 
 #logo {
 	height: var(--header-element);
@@ -351,9 +371,17 @@ input[type="radio"]:checked + .setting-option {
 	background: var(--over);
 	width: 60%;
 	height: 50%;
+	max-width: 800px;
 }
 
-#modal-content { padding: 1rem }
+#modal-content {
+	padding: 1rem;
+	overflow: auto;
+}
+
+#modal-content * {
+	margin-bottom: 2rem;
+}
 
 .hidden { display: none !important; }
 
