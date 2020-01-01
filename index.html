@@ -11,7 +11,7 @@
 </head>
 <body>
 	<header>
-		<h1 class="text rainbow">GUESS THE <span class="guess">HEX</span></h1>
+		<h1 class="text rainbow">guess the <span class="guess"></span></h1>
 		<label for="settings-check">
 			<input id="settings-check" type="checkbox">
 			<svg id="settings-cog" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 131 131" tabindex="0">
@@ -20,10 +20,10 @@
 		</label>
 		</header>
 		<aside id="settings" open="false">
-			<h1 class="text">SETTINGS</h1>
+			<h1 class="text">settings</h1>
 			<span class="text" id="close-settings">×</span>
 			<section class="setting">
-				<h3 class="text">Guess</h3>
+				<h3 class="text">guess</h3>
 				<form class="setting-options" name="guesses">
 					<input type="radio" name="guess" id="guess-hex" value="hex">
 					<label class="setting-option guess" for="guess-hex">HEX</label>
@@ -36,7 +36,7 @@
 				</form>
 			</section>
 			<section class="setting">
-				<h3 class="text">Given</h3>
+				<h3 class="text">given</h3>
 				<form class="setting-options" name="givens">
 					<input type="radio" name="given" id="given-hex" value="hex">
 					<label class="setting-option given" for="given-hex">HEX</label>
@@ -49,7 +49,7 @@
 				</form>
 			</section>
 			<section class="setting">
-				<h3 class="text">Game Mode</h3>
+				<h3 class="text">game mode</h3>
 				<form class="setting-options" name="modes">
 					<input type="radio" name="gameMode" id="speed" value="speed">
 					<label class="setting-option" for="speed">Speed</label>
@@ -62,7 +62,7 @@
 				</form>
 			</section>
 			<section class="setting">
-				<h3 class="text">Difficulty</h3>
+				<h3 class="text">difficulty</h3>
 				<form class="setting-options" name="difficulties">
 					<input type="radio" name="difficulty" id="1" value="1">
 					<label class="setting-option" for="1">1</label>
@@ -79,20 +79,20 @@
 				</form>
 			</section>
 			<section class="setting hidden" id="time">
-				<h3 class="text">Time</h3>
+				<h3 class="text">time</h3>
 				<form class="setting-options" name="time">
 					<input type="number" name="minutes" class="text input" id="minutes" placeholder="minutes" max="10" min="0">
 					<input type="number" name="seconds" class="text input" id="seconds" placeholder="seconds" max="59" min="0">
 				</form>
 			</section>
 			<section class="setting" id="questions">
-				<h3 class="text">Number of Questions</h3>
+				<h3 class="text">questions</h3>
 				<form name="numQuestions">
 					<input type="number" name="questions" class="text input" placeholder="questions" max="999" min="1">
 				</form>
 			</section>
 			<section class="setting" id="themes">
-				<h3 class="text">Color Theme</h3>
+				<h3 class="text">color theme</h3>
 				<form class="setting-options" name="themes">
 					<input type="radio" name="theme" id="light" value="light">
 					<label class="setting-option" for="light">Light</label>
@@ -108,21 +108,21 @@
 					<div class="flipper-sides" id="gb-flip">
 						<div class="flipper-front text" id="guess-box"></div>
 						<div class="flipper-back text" id="info-box">
-							<span class="setting-info" id="info-mode">Mode: Speed</span>
+							<span class="setting-info" id="info-mode"></span>
 							<div class="setting-info" id="info-gg">
-								<span id="info-guess">Hex</span>
+								<span id="info-guess"></span>
 								<span>/</span>
-								<span id="info-given">Color</span>
+								<span id="info-given"></span>
 							</div>
-							<span class="setting-info" id="info-difficulty">Mode: Speed</span>
-							<button class="btn info-btn hidden" id="info-reset">RESET</button>
-							<button class="btn info-btn hidden" id="info-restart">RESTART</button>
+							<span class="setting-info" id="info-difficulty"></span>
+							<button class="btn info-btn hidden" id="info-reset">reset</button>
+							<button class="btn info-btn hidden" id="info-restart">restart</button>
 						</div>
 					</div>
 				</div>
 				<div class="flipper" id="timer-start">
 					<div class="flipper-sides">
-						<button class="text btn flipper-front" id="start">START</button>
+						<button class="text btn flipper-front" id="start">start</button>
 						<span class="mono-text flipper-back" id="timer"></span>
 					</div>
 				</div>
@@ -147,12 +147,12 @@
 	</body>
 	<div class="hidden" id="modal">
 		<div id="modal-body">
-			<h1 class="text" id="modal-title">WELCOME!</h1>
+			<h1 class="text" id="modal-title">welcome!</h1>
 			<div class="text" id="modal-content">
 				<p>I made this game to improve my ability to recognise colors by their hexadecimal values and vice verca.</p>
 				<p>Click on the box above the start button to see your settings mid game.</p>
 			</div>
-			<button class="text btn" id="modal-button">CLOSE</button>
+			<button class="text btn" id="modal-button">close</button>
 		</div>
 	</div>
 </html>

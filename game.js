@@ -123,24 +123,40 @@ class Utils {
 			}
 		}
 	}
+	/**
+	 * Update the title of the page and tab.
+	 * @param {string} title - the value being guessed.
+	 */
 	static updateTitle(title) {
-		document.querySelector(".guess").innerText = title.toUpperCase();
-		document.querySelector("title").innerText = `GUESS THE ${title.toUpperCase()}`;
+		document.querySelector(".guess").textContent = title;
+		document.querySelector("title").textContent = `GUESS THE ${title.toUpperCase()}`;
 	}
+	/**
+	 * Create a modal with a title, text and a close button. call with no parameters to call the welcome modal.
+	 * @param {string} title - The title of the modal.
+	 * @param {*} value - The modal text or a DOM node containing elements to display on the modal.
+	 */
 	static modal(title, value) {
-		document.querySelector("#modal-title").textContent = title;
-		if (typeof value == "object") {
-			document.querySelector("#modal-content").innerHTML = "";
-			document.querySelector("#modal-content").append(value);
+		if (title != undefined && value != undefined) {
+			document.querySelector("#modal-title").textContent = title;
+			if (typeof value == "object") {
+				document.querySelector("#modal-content").innerHTML = "";
+				document.querySelector("#modal-content").append(value);
+			}
+			else
+				document.querySelector("#modal-content").innerHTML = value;
 		}
-		else
-			document.querySelector("#modal-content").innerHTML = value;
 		document.querySelector("#modal").classList.remove("hidden");
 		document.querySelector("#modal-button").focus();
 	}
+	/**
+	 * Create a modal with a title of WELL DONE or GAME OVER and displays the players score. The title depends on the players score.
+	 * @param {string} message - The end message.
+	 * @param {number} right - the number of questions answered correctly.
+	 * @param {number} wrong - the number of questions answered incorrectly.
+	 */
 	static endModal(message, right, wrong) {
 		let element, container = document.createElement("div");
-
 		element = document.createElement("p");
 		element.append(document.createTextNode(message));
 		container.append(element);
@@ -152,10 +168,14 @@ class Utils {
 		element.append(document.createTextNode(wrong + " wrong"));
 		element.className = "wrong-box";
 		container.append(element);
-		let title = (right >= 10 && wrong == 0) ? "WELL DONE" : "GAME OVER";
+		let title = (right >= Settings.defaults.questions && wrong == 0) ? "WELL DONE" : "GAME OVER";
 		Utils.modal(title, container);
 	}
-
+	/**
+	 * Return the element with the specified value from an array of elements.
+	 * @param {Array} array - The array of elements.
+	 * @param {string} value - The value to search by.
+	 */
 	static getElementByValue(array, value) {
 		for (let i of array) {
 			if (i.value == value)
@@ -233,6 +253,7 @@ class Settings {
 		document.forms.time.seconds.value = this.secs;
 		Utils.getElementByValue(document.forms.themes.theme, this.theme).click();
 	}
+	/** Store settings in localStorage if localStorage is accessable. */
 	store() {
 		if (localStorageAccessable) {
 			localStorage.setItem("guess", this.guess);
@@ -245,6 +266,7 @@ class Settings {
 			localStorage.setItem("theme", this.theme);
 		}
 	}
+	/** Read settings from localStorage if localStorage is accessable. */
 	read() {
 		if (localStorageAccessable) {
 			this.guess = localStorage.getItem("guess");
@@ -261,6 +283,7 @@ class Settings {
 			}
 		}
 	}
+	/**  */
 	reset() {
 		if (localStorageAccessable) {
 			localStorage.removeItem("guess");
@@ -288,6 +311,7 @@ class Game {
 		this.color;
 		this.ansPos;
 		this.reset();
+		this.disabledModal = false;
 	}
 	updateTime(direction) {
 		if (direction == "-") {
@@ -433,6 +457,8 @@ class Game {
 				Utils.endModal(`You answered ${this.settings.questions} questions, out of which you got:`, this.right, this.wrong);
 				break;
 		}
+		this.disabledModal = true;
+		setTimeout(() => {this.disabledModal = false}, 1500);
 	}
 }
 
@@ -559,10 +585,19 @@ class Color {
 
 // ---------------------------------------- Event Listeners ---------------------------------------
 (() => {
-	// Add event listener to modal button
+	// Add event listener to modal
 	document.querySelector("#modal").addEventListener("click", () => {
+		if (!game.disabledModal) {
 		document.querySelector("#modal").classList.add("hidden");
 		game.reset();
+		}
+	});
+	// Add escape listener to modal
+	document.querySelector("#modal").addEventListener("keyup", (e) => {
+		if (e.key == "Escape") {
+			document.querySelector("#modal").classList.add("hidden");
+			game.reset();
+		}
 	});
 
 	// Add event listener to settings cog
@@ -722,6 +757,6 @@ class Color {
 		temp.innerHTML = "Unable to access localStorage to store settings.<br>If you want your settings to be remembered between sessions, go to<br>Settings > Additional Settings > Privacy and Security > Site Settings > Cookies<br>in your browser and add this site to the allowed list.";
 		temp.classList.add("warning");
 		document.querySelector("#modal-content").append(temp);
-		document.querySelector("#modal").classList.remove("hidden");
+		Utils.modal();
 	}
 })();

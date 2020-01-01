@@ -72,6 +72,7 @@ button {
 }
 
 .btn {
+	text-transform: uppercase;
 	font-size: 2.5rem;
 	color: var(--btn-foreground);
 	background: var(--accent);
@@ -85,12 +86,14 @@ button {
 .btn:active { transform: scale(0.95) }
 
 h1 {
+	text-transform: uppercase;
 	font-size: var(--header-element) !important;
 	text-align: center;
 	margin: 0 auto 0 auto;
 }
 
 h3 {
+	text-transform: capitalize;
 	font-size: 2rem !important;
 	margin-bottom: 0.5rem;
 }
@@ -292,6 +295,7 @@ input[type="radio"]:checked + .setting-option {
 .flipper.flipped .flipper-sides { transform: rotateX(.5turn) }
 
 .setting-info {
+	text-transform: capitalize;
 	grid-row: 1/2;
 	font-weight: 600;
 	width: unset;
