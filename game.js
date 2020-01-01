@@ -129,9 +129,33 @@ class Utils {
 	}
 	static modal(title, value) {
 		document.querySelector("#modal-title").textContent = title;
-		document.querySelector("#modal-content").innerHTML = value;
+		if (typeof value == "object") {
+			document.querySelector("#modal-content").innerHTML = "";
+			document.querySelector("#modal-content").append(value);
+		}
+		else
+			document.querySelector("#modal-content").innerHTML = value;
 		document.querySelector("#modal").classList.remove("hidden");
+		document.querySelector("#modal-button").focus();
 	}
+	static endModal(message, right, wrong) {
+		let element, container = document.createElement("div");
+
+		element = document.createElement("p");
+		element.append(document.createTextNode(message));
+		container.append(element);
+		element = document.createElement("div");
+		element.append(document.createTextNode(right + " right"));
+		element.className = "right-box";
+		container.append(element);
+		element = document.createElement("div");
+		element.append(document.createTextNode(wrong + " wrong"));
+		element.className = "wrong-box";
+		container.append(element);
+		let title = (right >= 10 && wrong == 0) ? "WELL DONE" : "GAME OVER";
+		Utils.modal(title, container);
+	}
+
 	static getElementByValue(array, value) {
 		for (let i of array) {
 			if (i.value == value)
@@ -290,7 +314,7 @@ class Game {
 				++this.time[0];
 			}
 		}
-		timerEl.textContent = this.time.map((el) => {return Utils.justifyR(el, 0, 2)}).join(":");
+		timerEl.textContent = this.time.map((el) => {return Utils.justifyR(Number(el), 0, 2)}).join(":");
 	}
 	updateCounter() {
 		counterEl.textContent = Utils.justifyR(this.counter[0], 0, 2) + " / " + Utils.justifyR(this.counter[1], 0, 2);
@@ -335,6 +359,8 @@ class Game {
 		this.settings.mins = document.forms.time.minutes.value;
 		this.settings.secs = document.forms.time.seconds.value;
 		if (this.settings.mins === 0 && this.settings.secs === 0) this.settings.mins = this.settings.defaults.mins;
+		if (this.settings.mins == "") this.settings.mins = "0";
+		if (this.settings.secs == "") this.settings.secs = "0";
 
 		this.counter = [0, 0];
 		this.time = [0, 0, 0];
@@ -385,10 +411,8 @@ class Game {
 		Utils.setOptions(false, false);
 		this.nextQuestion();
 		this.gameReset = false;
-		for (let i of document.querySelectorAll(".info-btn")) {
+		for (let i of document.querySelectorAll(".info-btn"))
 			i.classList.remove("hidden");
-			console.log("here");
-		}
 	}
 	end() {
 		clearInterval(this.timer);
@@ -398,19 +422,17 @@ class Game {
 		this.end();
 		switch (this.settings.mode) {
 			case "speed":
-				alert(`GAME OVER!\nIn ${game.initialTime[0]}m ${game.initialTime[1]}s you answered ${game.counter[0]} questions, out of which you got:\n${game.right} right\n${game.wrong} wrong`);
+				Utils.endModal(`In ${Number(this.initialTime[0])}m ${Number(this.initialTime[1])}.${this.time[2]}s you answered ${this.counter[0]} questions, out of which you got:`, this.right, this.wrong);
 				break;
 		
 			case "timed":
-				alert(`GAME OVER!\nIt took you ${game.time[0]}m ${game.time[1]}.${Math.floor(game.time[2]/10)}s to answer ${game.settings.questions} questions, out of which you got:\n${game.right} right\n${game.wrong} wrong`);
+				Utils.endModal(`It took you ${this.time[0]}m ${this.time[1]}.${this.time[2]}s to answer ${this.settings.questions} questions, out of which you got:` ,this.right, this.wrong);
 				break;
 
 			case "zen":
-				alert(`GAME OVER!\nYou answered ${game.settings.questions} questions, out of which you got:\n${game.right} right\n${game.wrong} wrong`)
+				Utils.endModal(`You answered ${this.settings.questions} questions, out of which you got:`, this.right, this.wrong);
 				break;
 		}
-		// Put in the close modal button when ending modals are implemented
-		this.reset();
 	}
 }
 
@@ -559,6 +581,12 @@ class Color {
 		setTimeout(unFlip, 2500);
 	});
 
+	// Add event listener to reset button
+	document.querySelector("#info-reset").addEventListener("click", () => {game.reset()});
+
+	// add event listener to restart button
+	document.querySelector("#info-restart").addEventListener("click", () => {game.start()});
+
 	/** The function triggered when one of the guess options is selected */
 	function chooseGuess(event) {
 		if (game != undefined) {
@@ -677,10 +705,10 @@ class Color {
 	for (let i of options) {
 		i.addEventListener("click", onAnswer);
 	}
-})();
 
 // ---------------------------------------- Initialize Game ---------------------------------------
-var game = new Game(new Settings());
+	var game = new Game(new Settings());
+})();
 
 // ----------------------------------------- Welcome Modal ----------------------------------------
 (() => {

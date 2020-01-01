@@ -20,7 +20,7 @@
 		</label>
 		</header>
 		<aside id="settings" open="false">
-			<h1 class="text rainbow">SETTINGS</h1>
+			<h1 class="text">SETTINGS</h1>
 			<span class="text" id="close-settings">×</span>
 			<section class="setting">
 				<h3 class="text">Guess</h3>
@@ -115,8 +115,8 @@
 								<span id="info-given">Color</span>
 							</div>
 							<span class="setting-info" id="info-difficulty">Mode: Speed</span>
-							<button class="btn info-btn hidden" onclick="game.reset()" id="info-reset">RESET</button>
-							<button class="btn info-btn hidden" onclick="game.end()" id="info-stop">STOP</button>
+							<button class="btn info-btn hidden" id="info-reset">RESET</button>
+							<button class="btn info-btn hidden" id="info-restart">RESTART</button>
 						</div>
 					</div>
 				</div>
@@ -128,8 +128,8 @@
 				</div>
 				<div id="progress">
 					<span class="mono-text" id="counter"></span>
-					<span class="mono-text" id="right"></span>
-					<span class="mono-text" id="wrong"></span>
+					<span class="mono-text right-box" id="right"></span>
+					<span class="mono-text wrong-box" id="wrong"></span>
 				</div>
 			</section>
 			<section id="options">
