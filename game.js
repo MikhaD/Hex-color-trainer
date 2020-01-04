@@ -9,6 +9,7 @@ const counterEl		= document.querySelector("#counter");
 const rightEl		= document.querySelector("#right");
 const wrongEl		= document.querySelector("#wrong");
 const startEl		= document.querySelector("#start");
+let settings;
 
 const localStorageAccessable = (() => {
 	try {
@@ -27,11 +28,11 @@ const localStorageAccessable = (() => {
 	var minWidth = 500, maxWidth = 900;
 	function resizeHeader() {
 		if (window.innerWidth <= minWidth)
-		headerHeight = minWidth;
+			headerHeight = minWidth;
 		else if (window.innerWidth >= maxWidth)
-		headerHeight = maxWidth
+			headerHeight = maxWidth;
 		else
-		headerHeight = window.innerWidth;
+			headerHeight = window.innerWidth;
 		root.style.setProperty("--header-height", Math.floor(headerHeight/10) + "px");
 	}
 	window.addEventListener("resize", resizeHeader);
@@ -48,7 +49,7 @@ function flip() {
 	flipper.classList.add("flipped");
 	flipper.classList.remove("hover");
 	clearTimeout(flipBack);
-	flipBack = setTimeout(unFlip, 4000);
+	flipBack = setTimeout(unFlip, (settings.infoDisplay != null && settings.infoDisplay != undefined ? settings.infoDisplay : Settings.defaults.infoDisplay)*1000);
 	TimeoutOver = false;
 	flipped = true;
 }
@@ -77,7 +78,6 @@ flipper.addEventListener("mouseout", () => {
 	if (TimeoutOver)
 		unFlip();
 });
-
 // -------------------------------------------- Classes -------------------------------------------
 class Utils {
 	/**
@@ -185,8 +185,8 @@ class Utils {
 }
 
 class Difficulty {
-	/**The highest difficulty level present in the html */
-	static max  = (() => {
+	/** The highest difficulty level present in the html */
+	static max = (() => {
 		let max, temp = document.forms.difficulties.difficulty.values();
 		for (let i of temp) max = i.value;
 		return Number(max);
@@ -230,7 +230,10 @@ class Settings {
 		"questions": "10",
 		"mins": "1",
 		"secs": "30",
-		"theme": "light"
+		"theme": "light",
+		"hexCase": "lower",
+		"ansDisplay": "0.4",
+		"infoDisplay": "4"
 	}
 	constructor() {
 		this.read();
@@ -243,6 +246,9 @@ class Settings {
 			this.mins = Settings.defaults.mins;
 			this.secs = Settings.defaults.secs;
 			this.theme = Settings.defaults.theme;
+			this.hexCase = Settings.defaults.hexCase;
+			this.ansDisplay = Settings.defaults.ansDisplay;
+			this.infoDisplay = Settings.defaults.infoDisplay;
 		}
 		Utils.getElementByValue(document.forms.guesses.guess, this.guess).click();
 		Utils.getElementByValue(document.forms.givens.given, this.given).click();
@@ -252,9 +258,20 @@ class Settings {
 		document.forms.time.minutes.value = this.mins;
 		document.forms.time.seconds.value = this.secs;
 		Utils.getElementByValue(document.forms.themes.theme, this.theme).click();
+		Utils.getElementByValue(document.forms.cases.case, this.hexCase).click();
+		document.forms.ansDisplay.seconds.value = this.ansDisplay;
+		document.forms.infoDisplay.seconds.value = this.infoDisplay;
 	}
 	/** Store settings in localStorage if localStorage is accessable. */
 	store() {
+		if (document.forms.ansDisplay.seconds.value != "")
+			this.ansDisplay = document.forms.ansDisplay.seconds.value;
+		else
+			this.ansDisplay = Settings.defaults.ansDisplay;
+		if (document.forms.infoDisplay.seconds.value != "")
+			this.infoDisplay = document.forms.infoDisplay.seconds.value;
+		else
+			this.infoDisplay = Settings.defaults.infoDisplay;
 		if (localStorageAccessable) {
 			localStorage.setItem("guess", this.guess);
 			localStorage.setItem("given", this.given);
@@ -264,6 +281,9 @@ class Settings {
 			localStorage.setItem("mins", this.mins);
 			localStorage.setItem("secs", this.secs);
 			localStorage.setItem("theme", this.theme);
+			localStorage.setItem("hexCase", this.hexCase);
+			localStorage.setItem("ansDisplay", this.ansDisplay);
+			localStorage.setItem("infoDisplay", this.infoDisplay);
 		}
 	}
 	/** Read settings from localStorage if localStorage is accessable. */
@@ -277,6 +297,9 @@ class Settings {
 			this.mins = localStorage.getItem("mins");
 			this.secs = localStorage.getItem("secs");
 			this.theme = localStorage.getItem("theme");
+			this.hexCase = localStorage.getItem("hexCase");
+			this.ansDisplay = localStorage.getItem("ansDisplay");
+			this.infoDisplay = localStorage.getItem("infoDisplay");
 			for (let i in this) {
 				if (this[i] == null || this[i] == undefined)
 					this[i] = Settings.defaults[i];
@@ -294,6 +317,9 @@ class Settings {
 			localStorage.removeItem("mins");
 			localStorage.removeItem("secs");
 			localStorage.removeItem("theme");
+			localStorage.removeItem("hexCase");
+			localStorage.removeItem("ansDisplay");
+			localStorage.removeItem("infoDisplay");
 		}
 		for (let i in this)
 			this[i] = Settings.defaults[i];
@@ -350,6 +376,8 @@ class Game {
 	/**Call the next question and set all the relevant html elements to their required values */
 	nextQuestion() {
 		this.color = new Color(Utils.genRgb());
+		if (this.settings.hexCase == "lower")
+			this.color.hex = this.color.hex.toLowerCase();
 		this.ansPos = Utils.randInt(1, 9);
 		if (this.settings.given != "color")
 			guessBoxEl.textContent = this.color[this.settings.given];
@@ -361,9 +389,17 @@ class Game {
 			options[i].removeAttribute("style");
 			options[i].textContent = "";
 			if (this.settings.guess != "color") {
-				options[i].textContent = (i+1 != this.ansPos) ? new Color(this.difficulty.option(this.color))[this.settings.guess] : this.color[this.settings.guess];
+				let btnColor;
+				if (i+1 != this.ansPos) {
+					btnColor = new Color(this.difficulty.option(this.color));
+					if (this.settings.hexCase == "lower")
+						btnColor.hex = btnColor.hex.toLowerCase();
+				}
+				else
+					btnColor = this.color;
+				options[i].textContent = btnColor[this.settings.guess];
 			} else {
-				options[i].style["background"] = i+1 != this.ansPos ? new Color(this.difficulty.option(this.color)).hex : this.color.hex;
+				options[i].style["background"] = i+1 != this.ansPos ? new Color(this.difficulty.option(this.color)).rgb : this.color.rgb;
 			}
 		}
 	}
@@ -583,8 +619,8 @@ class Color {
 	}
 }
 
-// ---------------------------------------- Event Listeners ---------------------------------------
 (() => {
+	// ---------------------------------------- Event Listeners ---------------------------------------
 	// Add event listener to modal
 	document.querySelector("#modal").addEventListener("click", () => {
 		if (!game.disabledModal) {
@@ -602,13 +638,13 @@ class Color {
 
 	// Add event listener to settings cog
 	document.querySelector("#settings-cog").addEventListener("click", () => {
-		document.querySelector("#settings").setAttribute("open", true);
+		document.querySelector("#settings-drawer").setAttribute("open", true);
 		game.end();
 	});
 
 	// Add event listener to close settings ×
 	document.querySelector("#close-settings").addEventListener("click", () => {
-		document.querySelector("#settings").setAttribute("open", false);
+		document.querySelector("#settings-drawer").setAttribute("open", false);
 		document.querySelector("#settings-check").checked = false;
 		game.reset();
 		game.settings.store();
@@ -628,6 +664,7 @@ class Color {
 			if (event.target.value == game.settings.given) {
 				document.forms.givens.given.value = game.settings.guess;
 				game.settings.given = game.settings.guess;
+				document.querySelector("#info-given").textContent = game.settings.guess;
 			}
 			game.settings.guess = event.target.value;
 		}
@@ -645,6 +682,7 @@ class Color {
 			if (event.target.value == game.settings.guess) {
 				document.forms.guesses.guess.value = game.settings.given;
 				game.settings.guess = game.settings.given;
+				document.querySelector("#info-guess").textContent = game.settings.given;
 			}
 			game.settings.given = event.target.value;
 		}
@@ -655,7 +693,7 @@ class Color {
 		i.addEventListener("click", chooseGiven);
 	}
 
-	/**The function that runs when one of the gamemode options is selected */
+	/** The function that runs when one of the gamemode options is selected */
 	function gameMode(event) {
 		switch (event.target.value) {
 			case "speed":
@@ -682,7 +720,7 @@ class Color {
 		i.addEventListener("click", gameMode);
 	}
 
-	/**The function that runs when one of the theme options is selected */
+	/** The function that runs when one of the theme options is selected */
 	function setTheme(event) {
 		if (game != undefined && game.settings.theme != event.target.value) {
 			root.classList.add("trans-all");
@@ -697,12 +735,32 @@ class Color {
 		i.addEventListener("click", setTheme);
 	}
 
+	// Add event listener to advanced settings button
+	document.querySelector("#advanced-settings-button").addEventListener("click", () => {
+		let as = document.querySelector("#advanced-settings-drawer");
+		if (as.getAttribute("open") === "true") {
+			as.setAttribute("open", false);
+		} else {
+			as.setAttribute("open", true);
+		}
+	});
+
+	/** The function that runs when one of the Hexadecimal case options is selected */
+	function setHexCase(event) {
+		if (game != undefined)
+			settings.hexCase = event.target.value;
+	}
+	// Add event listeners to hexCase radio buttons
+	for (let i of document.forms.cases.elements) {
+		i.addEventListener("click", setHexCase)
+	}
+
 	// Add event listener to start button
 	startEl.addEventListener("click", () => {
 		game.start();
 	});
 
-	/**The function that runs when one of the answer buttons is pressed */
+	/** The function that runs when one of the answer buttons is pressed */
 	function onAnswer(event) {
 		if (event.target.getAttribute("position") == game.ansPos) {
 			++game.right;
@@ -734,7 +792,7 @@ class Color {
 			else {
 				game.finish();
 			}
-		}, 400);
+		}, settings.ansDisplay*1000);
 	}
 	// Add event listeners to option buttons
 	for (let i of options) {
@@ -742,7 +800,8 @@ class Color {
 	}
 
 // ---------------------------------------- Initialize Game ---------------------------------------
-	var game = new Game(new Settings());
+	settings = new Settings();
+	var game = new Game(settings);
 })();
 
 // ----------------------------------------- Welcome Modal ----------------------------------------

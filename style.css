@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Courier+Prime&display=swap');
-* {
+*, *::before, *::after {
 	margin: 0;
 	border: 0;
 	padding: 0;
@@ -9,6 +9,7 @@
 
 :root {
 	--header-height: 8rem;
+	--footer-height: 2rem;
 	--padding: 1rem;
 	--header-element: calc(var(--header-height) - 2*var(--padding));
 	--settings-width: 50rem;
@@ -51,8 +52,18 @@ body {
 header {
 	display: flex;
 	justify-content: space-between;
+	position: relative;
 	padding: 1rem;
 	height: var(--header-height);
+	width: 100%;
+}
+
+footer {
+	width: 100%;
+	text-align: center;
+	height: var(--footer-height);
+	position: absolute;
+	bottom: 1rem;
 }
 
 button {
@@ -63,7 +74,7 @@ button {
 
 .mono-text {
 	font-family: 'Courier Prime', monospace;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .text {
@@ -96,13 +107,14 @@ h3 {
 	text-transform: capitalize;
 	font-size: 2rem !important;
 	margin-bottom: 0.5rem;
+	text-align: center;
 }
 
 .rainbow {
-	background: linear-gradient(90deg, red, orange, yellow, green, royalblue, darkmagenta,violet);
+	background-image: linear-gradient(90deg, red, orange, yellow, green, royalblue, darkmagenta,violet);
 	-webkit-background-clip: text;
 	background-clip: text;
-	-webkit-text-fill-color: transparent;
+	color: transparent;
 }
 
 .red { color: red !important}
@@ -161,40 +173,42 @@ main {
 	overflow-x: hidden;
 }
 
-#settings {
-	padding-top: 1rem;
+#settings-drawer {
 	width: 100%;
-	height: 100%;
+	min-height: 100%;
 	transition: top 0.8s ease-in-out;
 	background: var(--over);
-	box-shadow: 2px 2px 5px rgba(0, 0, 0, var(--box-shadow-opacity));
 	position: fixed;
 	top: 100vh;
 	z-index: 99;
-
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	overflow-x: hidden;
 	overflow-y: auto;
 }
 
-#settings[open="true"] { top: 0 }
+#settings-drawer[open="true"] { top: 0 }
+
+#settings {
+	width: 100%;
+	display: grid;
+	grid-template: 1fr/1fr 1fr;
+}
 
 #close-settings {
-	font-size: 4rem;
-	font-weight: bold;
-	position: absolute;
-	right: 4rem;
-	top: 1.5rem;
+	margin: 0.5rem;
+	stroke: var(--foreground);
 	cursor: pointer;
 }
 
 .setting {
 	display: block;
 	width: 100%;
-	padding: 2rem 4rem 1rem 4rem;
+	padding: 2rem 0 1rem 0;
 	text-align: center;
+}
+
+.setting button {
+	width: 100%;
+	padding: 0.5rem 0 0.5rem 0;
+	font-size: 1.8rem;
 }
 
 .setting-options {
@@ -213,7 +227,6 @@ main {
 	transition: all 0.1s linear;
 }
 
-
 input[type="radio"]:checked + .setting-option {
 	background: linear-gradient(var(--grad-in), var(--grad-out), var(--grad-in));
 	box-shadow: inset 1px 1px 3px #0008;
@@ -229,16 +242,47 @@ input[type="radio"]:checked + .setting-option {
 
 .input:focus {outline: var(--accent) auto 1px}
 
-#signiture {
-	font-size: 1.2rem;
-	position: absolute;
-	bottom: 1rem;
+#advanced-settings-button {
+	margin-top: 2rem;
+	cursor: pointer;
 }
 
-#themes {
-	position: absolute;
-	bottom: 3rem;
+#advanced-settings-button svg {
+	fill: var(--foreground);
+	margin-left: 2rem;
 }
+
+#advanced-settings-button svg path {
+	transform-origin: center;
+	transform-box: fill-box;
+	transition: transform 0.3s linear;
+}
+
+#main-settings, #advanced-settings-drawer {
+	margin: 0 4rem 0 4rem;
+	position: relative;
+}
+
+#advanced-settings-drawer[open="false"] #advanced-settings-button svg path {
+	transform: rotate(90deg);
+}
+
+#advanced-settings {
+	margin-bottom: 5rem;
+	width: 100%;
+	position: absolute;
+	border-top: 1px solid var(--foreground);
+	border-bottom: 1px solid var(--foreground);
+	overflow: hidden;
+	height: 42rem;
+	transition: height 0.3s linear;
+}
+
+#advanced-settings-drawer[open="false"] #advanced-settings {
+	height: 0%;
+}
+
+#signiture { font-size: 1.2rem }
 
 #controls {
 	padding: 1rem;
@@ -274,7 +318,7 @@ input[type="radio"]:checked + .setting-option {
 	border: var(--box-outline) solid var(--foreground);
 	border-radius: 0.25rem;
 	font-size: 3rem;
-	font-weight: 600;
+	font-weight: 700;
 	transition: background-color 0.1s linear;
 }
 
@@ -297,7 +341,7 @@ input[type="radio"]:checked + .setting-option {
 .setting-info {
 	text-transform: capitalize;
 	grid-row: 1/2;
-	font-weight: 600;
+	font-weight: 700;
 	width: unset;
 	height: unset;
 }
@@ -323,7 +367,7 @@ input[type="radio"]:checked + .setting-option {
 
 .info-btn {
 	font-size: 1.6rem !important;
-	font-weight: 500;
+	font-weight: 700;
 	width: 100%;
 	height: 100%;
 }
@@ -341,7 +385,7 @@ input[type="radio"]:checked + .setting-option {
 #timer {
 	color: var(--foreground);
 	font-size: 7rem;
-	font-weight: 600;
+	font-weight: 700;
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
@@ -367,24 +411,21 @@ input[type="radio"]:checked + .setting-option {
 	padding-top: 7rem;
 }
 
-.right-box {
-	background-color: var(--right);
+.right-box, .wrong-box {
 	color: var(--btn-foreground);
 	text-align: center;
 	padding: 0.5rem 0 0.5rem 0;
+	font-weight: 700;
 }
+
+.right-box { background-color: var(--right) }
 
 .right {
 	outline: 1rem solid var(--right);
 	outline-offset: -1rem;
 }
 
-.wrong-box {
-	background-color: var(--wrong);
-	color: var(--btn-foreground);
-	text-align: center;
-	padding: 0.5rem 0 0.5rem 0;
-}
+.wrong-box { background-color: var(--wrong) }
 
 .wrong {
 	outline: 1rem solid var(--wrong);
@@ -406,13 +447,11 @@ input[type="radio"]:checked + .setting-option {
 	transition: all 0.1s linear;
 	border-radius: 0.25rem;
 	font-size: 2rem;
-	font-weight: 600;
+	font-weight: 700;
 	color: var(--foreground);
 }
 
-#options button:active {
-	transform: scale(0.95);
-}
+#options button:active { transform: scale(0.95) }
 
 #modal {
 	background: rgba(0, 0, 0, 0.9);
@@ -442,9 +481,7 @@ input[type="radio"]:checked + .setting-option {
 	overflow: auto;
 }
 
-#modal-content * {
-	margin-bottom: 2rem;
-}
+#modal-content * { margin-bottom: 2rem }
 
 .hidden { display: none !important }
 
@@ -453,12 +490,20 @@ html.trans-all, html.trans-all * {
 	transition-delay: 0 !important;
 }
 
+@media(min-width: 1200px) {
+	#settings { max-width: 1200px; margin: auto;}
+}
 @media(max-width: 900px) {
 	main { grid-template: 5fr 8fr / 1fr }
 	:root {
 		--settings-width: 100%;
 		--box-outline: 0.8rem;
 	}
+	#settings {
+		display: flex;
+		flex-direction: column;
+	}
+	#advanced-settings-drawer { padding-top: 2rem }
 	#controls {
 		row-gap: 0.5rem;
 		padding: 0 1rem 0 1rem;
