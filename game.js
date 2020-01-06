@@ -9,7 +9,7 @@ const counterEl		= document.querySelector("#counter");
 const rightEl		= document.querySelector("#right");
 const wrongEl		= document.querySelector("#wrong");
 const startEl		= document.querySelector("#start");
-let settings;
+let settings, autoPlayer;
 
 const localStorageAccessable = (() => {
 	try {
@@ -233,7 +233,8 @@ class Settings {
 		"theme": "light",
 		"hexCase": "lower",
 		"ansDisplay": "0.4",
-		"infoDisplay": "4"
+		"infoDisplay": "4",
+		"autoPlay": "off"
 	}
 	constructor() {
 		this.read();
@@ -249,6 +250,7 @@ class Settings {
 			this.hexCase = Settings.defaults.hexCase;
 			this.ansDisplay = Settings.defaults.ansDisplay;
 			this.infoDisplay = Settings.defaults.infoDisplay;
+			this.autoPlay = Settings.defaults.autoPlay;
 		}
 		Utils.getElementByValue(document.forms.guesses.guess, this.guess).click();
 		Utils.getElementByValue(document.forms.givens.given, this.given).click();
@@ -261,6 +263,7 @@ class Settings {
 		Utils.getElementByValue(document.forms.cases.case, this.hexCase).click();
 		document.forms.ansDisplay.seconds.value = this.ansDisplay;
 		document.forms.infoDisplay.seconds.value = this.infoDisplay;
+		Utils.getElementByValue(document.forms.autoPlay.on, this.autoPlay).click();
 	}
 	/** Store settings in localStorage if localStorage is accessable. */
 	store() {
@@ -284,6 +287,7 @@ class Settings {
 			localStorage.setItem("hexCase", this.hexCase);
 			localStorage.setItem("ansDisplay", this.ansDisplay);
 			localStorage.setItem("infoDisplay", this.infoDisplay);
+			localStorage.setItem("autoPlay", this.autoPlay);
 		}
 	}
 	/** Read settings from localStorage if localStorage is accessable. */
@@ -300,13 +304,14 @@ class Settings {
 			this.hexCase = localStorage.getItem("hexCase");
 			this.ansDisplay = localStorage.getItem("ansDisplay");
 			this.infoDisplay = localStorage.getItem("infoDisplay");
+			this.infoDisplay = localStorage.getItem("autoPlay");
 			for (let i in this) {
 				if (this[i] == null || this[i] == undefined)
 					this[i] = Settings.defaults[i];
 			}
 		}
 	}
-	/**  */
+	/** Remove all settings from localStorage if localStorage is accessable and reset game settings  */
 	reset() {
 		if (localStorageAccessable) {
 			localStorage.removeItem("guess");
@@ -320,6 +325,7 @@ class Settings {
 			localStorage.removeItem("hexCase");
 			localStorage.removeItem("ansDisplay");
 			localStorage.removeItem("infoDisplay");
+			localStorage.removeItem("autoPlay");
 		}
 		for (let i in this)
 			this[i] = Settings.defaults[i];
@@ -754,6 +760,41 @@ class Color {
 	for (let i of document.forms.cases.elements) {
 		i.addEventListener("click", setHexCase)
 	}
+	
+	document.querySelector("#off").addEventListener("click", () => {
+		clearInterval(autoPlayer);
+	});
+	
+	document.querySelector("#on").addEventListener("click", () => {
+		autoPlayer = setInterval((() => {
+			function newColor(value) {
+				if (value.substr(0, 4) === "rgb(") {
+					return new Color(value.substring(4, value.length - 1).split(","));
+				}
+				if (value.substr(0, 4) === "hsl(") {
+					return new Color(Color.hslToRgb(value, false));
+				}
+				if (value.substr(0, 1) === "#") {
+					return new Color(Color.hexToRgb(value, false));
+				}
+			}
+			let modalClasses = document.querySelector("#modal").classList;
+			let answer, value;
+			return () => {
+				value = (guessBoxEl.textContent != "") ? guessBoxEl.textContent : guessBoxEl.style.background;
+				if (value != "" && modalClasses.contains("hidden")) {
+					value = newColor(value);
+					for (let i of document.querySelectorAll("#options button")) {
+						answer = newColor(i.textContent == "" ? i.style.background : i.textContent);
+						if (answer.hex == value.hex) {
+							i.click();
+							break;
+						}
+					}
+				}
+			};
+		})(), settings.ansDisplay*1000)
+	});
 
 	// Add event listener to start button
 	startEl.addEventListener("click", () => {
