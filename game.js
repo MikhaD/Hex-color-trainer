@@ -263,6 +263,9 @@ class Settings {
 		Utils.getElementByValue(document.forms.cases.case, this.hexCase).click();
 		document.forms.ansDisplay.seconds.value = this.ansDisplay;
 		document.forms.infoDisplay.seconds.value = this.infoDisplay;
+		console.log("this.autoPlay: " + this.autoPlay);
+		console.log("document.forms.autoPlay.on: " + document.forms.autoPlay.on);
+		console.log("getElementByValue" + Utils.getElementByValue(document.forms.autoPlay.on, this.autoPlay));
 		Utils.getElementByValue(document.forms.autoPlay.on, this.autoPlay).click();
 	}
 	/** Store settings in localStorage if localStorage is accessable. */
