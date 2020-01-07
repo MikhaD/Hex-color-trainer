@@ -31,9 +31,9 @@
 :root[theme="dark"] {
 	--box-shadow-opacity: 80%;
 	--foreground: #afafaf;
-	--background: #121217;
+	--background: #121216;
 	--btn-foreground: var(--background);
-	--over: #16151e;
+	--over: #17161d;
 	--grad-in: #1f1d2b;
 	--grad-out: var(--background);
 	--accent: #88389c;
@@ -68,7 +68,7 @@ h1 {
 	text-transform: uppercase;
 	font-size: var(--header-element) !important;
 	text-align: center;
-	margin: 0 auto 0 auto;
+	margin: 0 auto;
 }
 
 h2, h3 {
@@ -94,7 +94,7 @@ footer {
 	width: 100%;
 	font-size: 1.2rem;
 	font-weight: 500;
-	margin: auto 0 1rem 0;
+	margin: auto 0 0.5rem 0;
 	text-align: center;
 	color: var(--foreground);
 }
@@ -191,6 +191,7 @@ input[type="checkbox"]:checked ~ #settings-cog .cog {
 
 #settings {
 	width: 100%;
+	max-width: 1500px;
 	display: grid;
 	grid-template: 1fr/1fr 1fr;
 }
@@ -307,6 +308,7 @@ input[type="radio"]:checked + .setting-option {
 	font-size: 3rem;
 	font-weight: 700;
 	transition: background-color 0.1s linear;
+	outline: none;
 }
 
 #info-box {
@@ -417,8 +419,11 @@ input[type="radio"]:checked + .setting-option {
 .wrong {
 	outline: 1rem solid var(--wrong);
 	outline-offset: -1rem;
-	display: grid;
 }
+
+#guess-box.right { border-color: var(--right) }
+
+#guess-box.wrong { border-color: var(--wrong) }
 
 #options {
 	display: inherit;
@@ -483,9 +488,6 @@ html.trans-all, html.trans-all * {
 	transition-delay: 0 !important;
 }
 
-@media(min-width: 1200px) {
-	#settings { max-width: 1500px }
-}
 @media(max-width: 900px) {
 	main { grid-template: 5fr 8fr / 1fr }
 	:root { --box-outline: 0.8rem }
@@ -498,6 +500,7 @@ html.trans-all, html.trans-all * {
 		row-gap: 0.5rem;
 		padding: 0 1rem 0 1rem;
 	}
+
 	#info-box {	grid-template: 2fr 3fr/repeat(6, 1fr) }
 	#timer { font-size: 4.5rem }
 	#progress { grid-template-rows: 3fr 2fr; }

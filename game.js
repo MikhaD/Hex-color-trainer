@@ -1,14 +1,14 @@
 // ------------------------------------------- Variables ------------------------------------------
-const root			= document.documentElement;
-const options		= document.querySelector("#options").children;
-const guessBoxEl	= document.querySelector("#guess-box");
-const timerEl		= document.querySelector("#timer");
-const timeEl		= document.querySelector("#time");
-const questionsEl	= document.querySelector("#questions");
-const counterEl		= document.querySelector("#counter");
-const rightEl		= document.querySelector("#right");
-const wrongEl		= document.querySelector("#wrong");
-const startEl		= document.querySelector("#start");
+const root = document.documentElement;
+const options = document.querySelector("#options").children;
+const guessBoxEl = document.querySelector("#guess-box");
+const timerEl = document.querySelector("#timer");
+const timeEl = document.querySelector("#time");
+const questionsEl = document.querySelector("#questions");
+const counterEl = document.querySelector("#counter");
+const rightEl = document.querySelector("#right");
+const wrongEl = document.querySelector("#wrong");
+const startEl = document.querySelector("#start");
 let settings, autoPlayer;
 
 const localStorageAccessable = (() => {
@@ -24,8 +24,8 @@ const localStorageAccessable = (() => {
 
 // ---------------------------------------- Adjusting Title ---------------------------------------
 (() => {
-	var headerHeight;
-	var minWidth = 500, maxWidth = 900;
+	let headerHeight;
+	const minWidth = 500, maxWidth = 900;
 	function resizeHeader() {
 		if (window.innerWidth <= minWidth)
 			headerHeight = minWidth;
@@ -33,23 +33,23 @@ const localStorageAccessable = (() => {
 			headerHeight = maxWidth;
 		else
 			headerHeight = window.innerWidth;
-		root.style.setProperty("--header-height", Math.floor(headerHeight/10) + "px");
+		root.style.setProperty("--header-height", Math.floor(headerHeight / 10) + "px");
 	}
 	window.addEventListener("resize", resizeHeader);
 	resizeHeader();
 })();
 
 // ----------------------------------------- Flipping tile ----------------------------------------
-var flipper = document.querySelector(".flipper");
-var flipped = false;
-var hover = false;
-var TimeoutOver = true;
-var flipBack;
+let flipper = document.querySelector(".flipper");
+let flipped = false;
+let hover = false;
+let TimeoutOver = true;
+let flipBack;
 function flip() {
 	flipper.classList.add("flipped");
 	flipper.classList.remove("hover");
 	clearTimeout(flipBack);
-	flipBack = setTimeout(unFlip, (settings.infoDisplay != null && settings.infoDisplay != undefined ? settings.infoDisplay : Settings.defaults.infoDisplay)*1000);
+	flipBack = setTimeout(unFlip, (settings.infoDisplay != null && settings.infoDisplay != undefined ? settings.infoDisplay : Settings.defaults.infoDisplay) * 1000);
 	TimeoutOver = false;
 	flipped = true;
 }
@@ -72,7 +72,7 @@ flipper.addEventListener("click", () => {
 		flip();
 	}
 });
-flipper.addEventListener("mouseover", () => {hover = true});
+flipper.addEventListener("mouseover", () => { hover = true });
 flipper.addEventListener("mouseout", () => {
 	hover = false;
 	if (TimeoutOver)
@@ -81,17 +81,6 @@ flipper.addEventListener("mouseout", () => {
 // -------------------------------------------- Classes -------------------------------------------
 class Utils {
 	/**
-	 * Justify a string to the right with a given character
-	 * @param {*} s - The string to format
-	 * @param {*} char - The character to justify with
-	 * @param {number} length - The minimum length for the justified string
-	 */
-	static justifyR(s, char, length) {
-		s = String(s); char = String(char);
-		if (s.length < length) for (let i=0; i<=(length-s.length); ++i, s=char+s) {}
-		return s;
-	}
-	/**
 	 * Generate a random integer between lower and upper, inclusive.
 	 * @param {number} lower The lower bound of the random integer.
 	 * @param {number} upper The upper bound of the random integer.
@@ -99,7 +88,7 @@ class Utils {
 	static randInt(lower, upper) {
 		lower = Math.round(lower);
 		upper = Math.round(upper);
-		return Math.round((upper-lower) * Math.random() + lower);
+		return Math.round((upper - lower) * Math.random() + lower);
 	}
 	/**Generate a random rgb value array */
 	static genRgb() {
@@ -118,8 +107,8 @@ class Utils {
 			if (disabled != undefined && typeof disabled == "boolean")
 				i.disabled = disabled;
 			if (reset) {
-			i.removeAttribute("style");
-			i.textContent = "";
+				i.removeAttribute("style");
+				i.textContent = "";
 			}
 		}
 	}
@@ -193,7 +182,7 @@ class Difficulty {
 	})();
 	constructor(difficulty) {
 		this.difficulty = Number(difficulty);
-		this.range = Math.round((1 + Difficulty.max - this.difficulty)*(255 / Difficulty.max)/2);
+		this.range = Math.round((1 + Difficulty.max - this.difficulty) * (255 / Difficulty.max) / 2);
 	}
 	/**Generate an rgb array based on another rgb array in a range determined by the difficulty */
 	option(val) {
@@ -201,8 +190,8 @@ class Difficulty {
 		for (let i of val.rgbArray) {
 			let lowerBound = i - this.range;
 			let upperBound = i + this.range;
-			let midStop = Math.round(i - (this.range*0.1));
-			let midStart = Math.round(i + (this.range*0.1));
+			let midStop = Math.round(i - (this.range * 0.1));
+			let midStart = Math.round(i + (this.range * 0.1));
 			if (lowerBound < 0) {
 				upperBound += Math.abs(lowerBound) - 1;
 				lowerBound = 0;
@@ -210,7 +199,7 @@ class Difficulty {
 				lowerBound -= (upperBound - 254);
 				upperBound = 255;
 			}
-			let result = Utils.randInt(lowerBound, upperBound - (1 + 0.2*this.range));
+			let result = Utils.randInt(lowerBound, upperBound - (1 + 0.2 * this.range));
 			if (result > midStop && result < midStart)
 				result = (result - midStop) + midStart;
 			if (result > 255)
@@ -223,18 +212,18 @@ class Difficulty {
 
 class Settings {
 	static defaults = {
-		"guess": "color",
-		"given": "hex",
-		"mode": "timed",
-		"difficulty": "1",
-		"questions": "10",
-		"mins": "1",
-		"secs": "30",
-		"theme": "light",
-		"hexCase": "lower",
-		"ansDisplay": "0.4",
-		"infoDisplay": "4",
-		"autoPlay": "off"
+		guess:		 "color",
+		given:		 "hex",
+		mode:		 "timed",
+		difficulty:	 "1",
+		questions:	 "10",
+		mins:		 "1",
+		secs:		 "30",
+		theme:		 "light",
+		hexCase:	 "lower",
+		ansDisplay:	 "0.4",
+		infoDisplay: "4",
+		autoPlay:	 "off"
 	}
 	constructor() {
 		this.read();
@@ -370,10 +359,10 @@ class Game {
 				++this.time[0];
 			}
 		}
-		timerEl.textContent = this.time.map((el) => {return Utils.justifyR(Number(el), 0, 2)}).join(":");
+		timerEl.textContent = this.time.map((el) => String(el).padStart(2, 0)).join(":");
 	}
 	updateCounter() {
-		counterEl.textContent = Utils.justifyR(this.counter[0], 0, 2) + " / " + Utils.justifyR(this.counter[1], 0, 2);
+		counterEl.textContent = this.counter.map((el) => String(el).padStart(2, 0)).join(" / ");
 	}
 	updateScore() {
 		rightEl.textContent = this.right;
@@ -396,7 +385,7 @@ class Game {
 			options[i].textContent = "";
 			if (this.settings.guess != "color") {
 				let btnColor;
-				if (i+1 != this.ansPos) {
+				if (i + 1 != this.ansPos) {
 					btnColor = new Color(this.difficulty.option(this.color));
 					if (this.settings.hexCase == "lower")
 						btnColor.hex = btnColor.hex.toLowerCase();
@@ -405,7 +394,7 @@ class Game {
 					btnColor = this.color;
 				options[i].textContent = btnColor[this.settings.guess];
 			} else {
-				options[i].style["background"] = i+1 != this.ansPos ? new Color(this.difficulty.option(this.color)).rgb : this.color.rgb;
+				options[i].style["background"] = i + 1 != this.ansPos ? new Color(this.difficulty.option(this.color)).rgb : this.color.rgb;
 			}
 		}
 	}
@@ -464,7 +453,7 @@ class Game {
 			case "speed":
 				this.timer = setInterval(() => {
 					this.updateTime("-");
-					if (this.time.every((val) => {return val == 0}))
+					if (this.time.every((val) => val == 0))
 						this.finish();
 				}, 10);
 				break;
@@ -490,9 +479,9 @@ class Game {
 			case "speed":
 				Utils.endModal(`In ${Number(this.initialTime[0])}m ${Number(this.initialTime[1])}.${this.time[2]}s you answered ${this.counter[0]} questions, out of which you got:`, this.right, this.wrong);
 				break;
-		
+
 			case "timed":
-				Utils.endModal(`It took you ${this.time[0]}m ${this.time[1]}.${this.time[2]}s to answer ${this.settings.questions} questions, out of which you got:` ,this.right, this.wrong);
+				Utils.endModal(`It took you ${this.time[0]}m ${this.time[1]}.${this.time[2]}s to answer ${this.settings.questions} questions, out of which you got:`, this.right, this.wrong);
 				break;
 
 			case "zen":
@@ -500,7 +489,7 @@ class Game {
 				break;
 		}
 		this.disabledModal = true;
-		setTimeout(() => {this.disabledModal = false}, 1500);
+		setTimeout(() => { this.disabledModal = false }, 500);
 	}
 }
 
@@ -523,8 +512,8 @@ class Color {
 	 */
 	static rgbToHex(rgb, str) {
 		if (typeof rgb !== "object")
-			rgb = rgb.substring(4, rgb.length-1).split(", ");
-		rgb = rgb.map((str) => {return Utils.justifyR(Number(str).toString(16), 0, 2).toUpperCase()});
+			rgb = rgb.substring(4, rgb.length - 1).split(", ");
+		rgb = rgb.map((str) => Number(str).toString(16).padStart(2, 0).toUpperCase());
 		return (str !== false) ? "#" + rgb.join("") : rgb;
 	}
 	/**Return the rgb equivalent for the hexadecimal color value or array.
@@ -538,19 +527,21 @@ class Color {
 				let result = hex;
 				for (let i = 0; i < 5; ++i)
 					result += hex;
-				return result})();
+				return result
+			})();
 			if (hex.length == 3) hex = (() => {
 				let result = "";
 				for (let i = 0; i < 3; ++i)
 					result += hex.charAt(i) + hex.charAt(i);
-				return result})();
+				return result
+			})();
 			hex = [hex.substr(0, 2), hex.substr(2, 2), hex.substr(4)];
 		}
 		hex = hex.map((x) => {
 			let rgb = 0;
 			for (let i = 0; i < 2; ++i) {
 				let v = String(x).charAt(i).toLowerCase();
-			rgb += (isNaN(v) ? 10 + "abcdef".indexOf(v) : Number(v))*16**(1-i);
+				rgb += (isNaN(v) ? 10 + "abcdef".indexOf(v) : Number(v)) * 16 ** (1 - i);
 			}
 			return rgb;
 		});
@@ -562,25 +553,25 @@ class Color {
 	 */
 	static hslToRgb(hsl, str) {
 		if (typeof hsl !== "object") {
-			hsl = hsl.substring(4, hsl.length-1).split(", ");
+			hsl = hsl.substring(4, hsl.length - 1).split(", ");
 		}
-		hsl = hsl.map((val) => {return Number(isNaN(val) && val.substr(val.length-1, 1) == "%" ? val.substr(0, val.length-1) : val)/100});
+		hsl = hsl.map((val) => Number(isNaN(val) && val.substr(val.length - 1, 1) == "%" ? val.substr(0, val.length - 1) : val) / 100);
 		let rgb = [0, 0, 0];
 		if (hsl[1] == 0) {
-			rgb[0] = Math.round(hsl[2]*255); rgb[1] = rgb[0]; rgb[2] = rgb[0];
+			rgb[0] = Math.round(hsl[2] * 255); rgb[1] = rgb[0]; rgb[2] = rgb[0];
 		} else {
-			let temp1 = (hsl[2] < 0.5) ? hsl[2]*(1+hsl[1]) : (hsl[2]+hsl[1])-(hsl[2]*hsl[1]);
+			let temp1 = (hsl[2] < 0.5) ? hsl[2] * (1 + hsl[1]) : (hsl[2] + hsl[1]) - (hsl[2] * hsl[1]);
 			let temp2 = (2 * hsl[2]) - temp1;
-			hsl[0] = (hsl[0]*100)/360;
-			rgb[0] = hsl[0] + (1/3); rgb[1] = hsl[0]; rgb[2] = hsl[0] - (1/3);
+			hsl[0] = (hsl[0] * 100) / 360;
+			rgb[0] = hsl[0] + (1 / 3); rgb[1] = hsl[0]; rgb[2] = hsl[0] - (1 / 3);
 
 			rgb = rgb.map((val) => {
 				val = ((val < 0) ? val + 1 : val) % 1;
-				if (6*val < 1) val = temp2 + (temp1 - temp2) * 6 * val;
+				if (6 * val < 1) val = temp2 + (temp1 - temp2) * 6 * val;
 				else if (2 * val < 1) val = temp1;
-				else if (3 * val < 2) val = temp2 + (temp1 - temp2) * 6 * ((2/3) - val);
+				else if (3 * val < 2) val = temp2 + (temp1 - temp2) * 6 * ((2 / 3) - val);
 				else val = temp2;
-				return Math.round(val*255);
+				return Math.round(val * 255);
 			});
 		}
 		return (str !== false) ? `rgb(${rgb.join(", ")})` : rgb;
@@ -591,20 +582,20 @@ class Color {
 	 */
 	static rgbToHsl(rgb, str) {
 		if (typeof rgb !== "object") {
-			rgb = rgb.substring(4, rgb.length-1).split(", ");
+			rgb = rgb.substring(4, rgb.length - 1).split(", ");
 		}
-		rgb = rgb.map((val) => {return val/255});
+		rgb = rgb.map((val) => val / 255);
 		let h, s, l;
 		let min = Math.min(rgb[0], rgb[1], rgb[2]), max = Math.max(rgb[0], rgb[1], rgb[2]);
-		let luminace = (min + max)/2;
-		l = Math.round(luminace*100);
+		let luminace = (min + max) / 2;
+		l = Math.round(luminace * 100);
 		if (min == max) {
 			s = 0; h = 0;
 		} else {
-			s = Math.round(((luminace < 0.5) ? (max - min)/(max + min) : (max - min)/(2 - (max + min)))*100);
-			if (rgb[0] == max) h = (rgb[1] - rgb[2])/(max - min);
-			else if (rgb[1] == max) h = 2 + (rgb[2] - rgb[0])/(max - min);
-			else h = 4 + (rgb[0] - rgb[1])/(max - min);
+			s = Math.round(((luminace < 0.5) ? (max - min) / (max + min) : (max - min) / (2 - (max + min))) * 100);
+			if (rgb[0] == max) h = (rgb[1] - rgb[2]) / (max - min);
+			else if (rgb[1] == max) h = 2 + (rgb[2] - rgb[0]) / (max - min);
+			else h = 4 + (rgb[0] - rgb[1]) / (max - min);
 		}
 		h = Math.round((h < 0) ? (h * 60) + 360 : (h * 60));
 		return (str !== false) ? `hsl(${h}, ${s}%, ${l}%)` : [h, s, l];
@@ -626,12 +617,12 @@ class Color {
 }
 
 (() => {
-	// ---------------------------------------- Event Listeners ---------------------------------------
+	// -------------------------------------- Event Listeners -------------------------------------
 	// Add event listener to modal
 	document.querySelector("#modal").addEventListener("click", () => {
 		if (!game.disabledModal) {
-		document.querySelector("#modal").classList.add("hidden");
-		game.reset();
+			document.querySelector("#modal").classList.add("hidden");
+			game.reset();
 		}
 	});
 	// Add escape listener to modal
@@ -659,10 +650,10 @@ class Color {
 	});
 
 	// Add event listener to reset button
-	document.querySelector("#info-reset").addEventListener("click", () => {game.reset()});
+	document.querySelector("#info-reset").addEventListener("click", () => { game.reset() });
 
 	// add event listener to restart button
-	document.querySelector("#info-restart").addEventListener("click", () => {game.start()});
+	document.querySelector("#info-restart").addEventListener("click", () => { game.start() });
 
 	/** The function triggered when one of the guess options is selected */
 	function chooseGuess(event) {
@@ -730,7 +721,7 @@ class Color {
 	function setTheme(event) {
 		if (game != undefined && game.settings.theme != event.target.value) {
 			root.classList.add("trans-all");
-			setTimeout(() => {root.classList.remove("trans-all")}, 500);
+			setTimeout(() => { root.classList.remove("trans-all") }, 500);
 		}
 		root.setAttribute("theme", event.target.value);
 		if (game != undefined)
@@ -760,11 +751,11 @@ class Color {
 	for (let i of document.forms.cases.elements) {
 		i.addEventListener("click", setHexCase)
 	}
-	
+
 	document.querySelector("#off").addEventListener("click", () => {
 		clearInterval(autoPlayer);
 	});
-	
+
 	document.querySelector("#on").addEventListener("click", () => {
 		autoPlayer = setInterval((() => {
 			function newColor(value) {
@@ -793,7 +784,7 @@ class Color {
 					}
 				}
 			};
-		})(), settings.ansDisplay*1000)
+		})(), settings.ansDisplay * 1000)
 	});
 
 	// Add event listener to start button
@@ -805,9 +796,11 @@ class Color {
 	function onAnswer(event) {
 		if (event.target.getAttribute("position") == game.ansPos) {
 			++game.right;
+			guessBoxEl.classList.add("right");
 		} else {
 			++game.wrong;
 			event.target.classList.add("wrong");
+			guessBoxEl.classList.add("wrong");
 		}
 		document.querySelector(`[position="${game.ansPos}"]`).classList.add("right");
 		game.updateScore();
@@ -826,6 +819,8 @@ class Color {
 				else guessBoxEl.removeAttribute("style");
 				i.classList.remove("wrong");
 				i.classList.remove("right");
+				guessBoxEl.classList.remove("right");
+				guessBoxEl.classList.remove("wrong");
 				i.disabled = false;
 			}
 			if (game.counter[0] != game.counter[1])
@@ -833,20 +828,18 @@ class Color {
 			else {
 				game.finish();
 			}
-		}, settings.ansDisplay*1000);
+		}, settings.ansDisplay * 1000);
 	}
 	// Add event listeners to option buttons
 	for (let i of options) {
 		i.addEventListener("click", onAnswer);
 	}
 
-// ---------------------------------------- Initialize Game ---------------------------------------
+	// -------------------------------------- Initialize Game -------------------------------------
 	settings = new Settings();
 	var game = new Game(settings);
-})();
 
-// ----------------------------------------- Welcome Modal ----------------------------------------
-(() => {
+	// --------------------------------------- Welcome Modal --------------------------------------
 	if (localStorageAccessable) {
 		if (localStorage.getItem("new") != "false") {
 			localStorage.setItem("new", "false");
