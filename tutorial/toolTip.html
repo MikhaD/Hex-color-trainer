@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	<style>
+		*, *::before, *::after {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		
+		:root {
+			font-size: 62.5%;
+			height: 100%;
+		}
+
+		body {
+			min-height: 100%;
+			display: flex;
+		}
+
+		main {
+			height: 100vmin;
+			width: 100vmin;
+			/* background-color: bisque; */
+			margin-left: auto;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		div.box {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			background-color: bisque;
+			outline: 2px solid black;
+			box-shadow: 0 0 5px 4px #00000080;
+			width: 60%;
+			height: 60%;
+		}
+	</style>
+	<link rel="stylesheet" href="tutorial.css">
+	<script src="tutorial.js" defer></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+	<body>
+		<main>
+			<div class="box box1">
+				<div class="box box2">
+					<div class="box box3">
+						<div class="box box4"></div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</body>
+</html>

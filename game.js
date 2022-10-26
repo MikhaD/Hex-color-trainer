@@ -90,6 +90,22 @@ flipper.addEventListener("mouseout", () => {
 	if (TimeoutOver)
 		unFlip();
 });
+// ------------------------------------------- Tutorial -------------------------------------------
+async function tutorial() {
+	let tut = await fetch('test.json')
+	.then(res => {
+		if (res.ok) {
+			return res.json()
+		} else {
+			Utils.modal("Tutorial Unavailable", "It appears that the tutorial is unavailable. This could be due to network issues, or a bug in my code.<br>Sorry");
+			return -1
+		}
+	})
+	.catch(er => Utils.modal("Tutorial Unavailable", "It appears that the tutorial is unavailable. This could be due to network issues, or a bug in my code.<br>Sorry"));
+	if (tut != -1) {
+		console.log(tut);
+	}
+}
 // -------------------------------------------- Classes -------------------------------------------
 class Utils {
 	/**
@@ -130,7 +146,7 @@ class Utils {
 	 */
 	static updateTitle(title) {
 		document.querySelector(".guess").textContent = title;
-		document.querySelector("title").textContent = `GUESS THE ${title.toUpperCase()}`;
+		document.title = `GUESS THE ${title.toUpperCase()}`;
 	}
 	/**
 	 * Create a modal with a title, text and a close button. call with no parameters to call the welcome modal.
@@ -806,7 +822,6 @@ class Color {
 	// --------------------------------------- Welcome Modal --------------------------------------
 	if (localStorageAccessible) {
 		if (settings.values.newPlayer != "false") {
-			console.log(settings.values.newPlayer);
 			settings.values.newPlayer = "false";
 			settings.store();
 			document.querySelector("#modal").classList.remove("hidden");
