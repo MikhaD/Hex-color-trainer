@@ -72,7 +72,7 @@ flipper.addEventListener("click", () => {
 		flip();
 	}
 });
-flipper.addEventListener("mouseover", () => { hover = true });
+flipper.addEventListener("mouseover", () => { hover = true; });
 flipper.addEventListener("mouseout", () => {
 	hover = false;
 	if (TimeoutOver)
@@ -98,8 +98,8 @@ class Utils {
 	}
 	/**
 	 * Modify the state of all the option buttons.
-	 * @param {boolean} reset - true if you wish to reset the contents and style of the buttons. 
-	 * @param {boolean} disabled - whether to disable the buttons. If left out the buttons will be unchanged. 
+	 * @param {boolean} reset - true if you wish to reset the contents and style of the buttons.
+	 * @param {boolean} disabled - whether to disable the buttons. If left out the buttons will be unchanged.
 	 */
 	static setOptions(reset, disabled) {
 		reset = (reset == undefined || typeof reset != "boolean") ? true : reset;
@@ -166,9 +166,14 @@ class Utils {
 	 * @param {string} value - The value to search by.
 	 */
 	static getElementByValue(array, value) {
+		console.log(array);
+		console.log(`%c${value}`, "color: yellow; font-weight: bold;");
 		for (let i of array) {
-			if (i.value == value)
+			if (i.value == value) {
+				console.log(`%cReturned value:`, "font-weight: bold;");
+				console.log(i);
 				return i;
+			}
 		}
 	}
 }
@@ -212,19 +217,19 @@ class Difficulty {
 
 class Settings {
 	static defaults = {
-		guess:		 "color",
-		given:		 "hex",
-		mode:		 "timed",
-		difficulty:	 "1",
-		questions:	 "10",
-		mins:		 "1",
-		secs:		 "30",
-		theme:		 "light",
-		hexCase:	 "lower",
-		ansDisplay:	 "0.4",
+		guess: "color",
+		given: "hex",
+		mode: "timed",
+		difficulty: "1",
+		questions: "10",
+		mins: "1",
+		secs: "30",
+		theme: "light",
+		hexCase: "lower",
+		ansDisplay: "0.4",
 		infoDisplay: "4",
-		autoPlay:	 "off"
-	}
+		autoPlay: "off"
+	};
 	constructor() {
 		this.read();
 		if (!localStorageAccessable) {
@@ -489,7 +494,7 @@ class Game {
 				break;
 		}
 		this.disabledModal = true;
-		setTimeout(() => { this.disabledModal = false }, 500);
+		setTimeout(() => { this.disabledModal = false; }, 500);
 	}
 }
 
@@ -527,13 +532,13 @@ class Color {
 				let result = hex;
 				for (let i = 0; i < 5; ++i)
 					result += hex;
-				return result
+				return result;
 			})();
 			if (hex.length == 3) hex = (() => {
 				let result = "";
 				for (let i = 0; i < 3; ++i)
 					result += hex.charAt(i) + hex.charAt(i);
-				return result
+				return result;
 			})();
 			hex = [hex.substr(0, 2), hex.substr(2, 2), hex.substr(4)];
 		}
@@ -650,10 +655,10 @@ class Color {
 	});
 
 	// Add event listener to reset button
-	document.querySelector("#info-reset").addEventListener("click", () => { game.reset() });
+	document.querySelector("#info-reset").addEventListener("click", () => { game.reset(); });
 
 	// add event listener to restart button
-	document.querySelector("#info-restart").addEventListener("click", () => { game.start() });
+	document.querySelector("#info-restart").addEventListener("click", () => { game.start(); });
 
 	/** The function triggered when one of the guess options is selected */
 	function chooseGuess(event) {
@@ -721,7 +726,7 @@ class Color {
 	function setTheme(event) {
 		if (game != undefined && game.settings.theme != event.target.value) {
 			root.classList.add("trans-all");
-			setTimeout(() => { root.classList.remove("trans-all") }, 500);
+			setTimeout(() => { root.classList.remove("trans-all"); }, 500);
 		}
 		root.setAttribute("theme", event.target.value);
 		if (game != undefined)
@@ -749,7 +754,7 @@ class Color {
 	}
 	// Add event listeners to hexCase radio buttons
 	for (let i of document.forms.cases.elements) {
-		i.addEventListener("click", setHexCase)
+		i.addEventListener("click", setHexCase);
 	}
 
 	document.querySelector("#off").addEventListener("click", () => {
@@ -784,7 +789,7 @@ class Color {
 					}
 				}
 			};
-		})(), settings.ansDisplay * 1000)
+		})(), settings.ansDisplay * 1000);
 	});
 
 	// Add event listener to start button
