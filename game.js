@@ -1,4 +1,5 @@
 // ------------------------------------------- Variables ------------------------------------------
+const LOCALSTORAGE_PREFIX = "cg";
 const root = document.documentElement;
 const options = document.querySelector("#options").children;
 const guessBoxEl = document.querySelector("#guess-box");
@@ -11,10 +12,10 @@ const wrongEl = document.querySelector("#wrong");
 const startEl = document.querySelector("#start");
 let settings, autoPlayer;
 
-const localStorageAccessable = (() => {
+const localStorageAccessible = (() => {
 	try {
-		localStorage.setItem("test", true);
-		localStorage.removeItem("test");
+		localStorage.setItem("localStorage-test", true);
+		localStorage.removeItem("localStorage-test");
 		return true;
 	} catch (error) {
 		console.warn("Unable to access localStorage");
@@ -22,22 +23,33 @@ const localStorageAccessable = (() => {
 	}
 })();
 
-// ---------------------------------------- Adjusting Title ---------------------------------------
-(() => {
-	let headerHeight;
-	const minWidth = 500, maxWidth = 900;
-	function resizeHeader() {
-		if (window.innerWidth <= minWidth)
-			headerHeight = minWidth;
-		else if (window.innerWidth >= maxWidth)
-			headerHeight = maxWidth;
-		else
-			headerHeight = window.innerWidth;
-		root.style.setProperty("--header-height", Math.floor(headerHeight / 10) + "px");
+// ------------------------------------ Number input validation -----------------------------------
+
+function validateInput(e) {
+	if (this.value > Number(this.max)) {
+		this.value = this.max;
+		return;
 	}
-	window.addEventListener("resize", resizeHeader);
-	resizeHeader();
-})();
+	if (this.value < Number(this.min)) {
+		this.value = this.min;
+		return;
+	}
+	if (isNaN(this.value)) {
+		this.value = this.min;
+		return;
+	}
+}
+
+function validateKeystroke(e) {
+	if (isNaN(Number(e.key))) {
+		e.preventDefault();
+	}
+}
+
+for (let el of document.querySelectorAll(".input.text")) {
+	el.addEventListener("input", validateInput);
+	el.addEventListener("keypress", validateKeystroke);
+}
 
 // ----------------------------------------- Flipping tile ----------------------------------------
 let flipper = document.querySelector(".flipper");
@@ -49,7 +61,7 @@ function flip() {
 	flipper.classList.add("flipped");
 	flipper.classList.remove("hover");
 	clearTimeout(flipBack);
-	flipBack = setTimeout(unFlip, (settings.infoDisplay != null && settings.infoDisplay != undefined ? settings.infoDisplay : Settings.defaults.infoDisplay) * 1000);
+	flipBack = setTimeout(unFlip, settings.values.infoDisplay * 1000);
 	TimeoutOver = false;
 	flipped = true;
 }
@@ -166,12 +178,8 @@ class Utils {
 	 * @param {string} value - The value to search by.
 	 */
 	static getElementByValue(array, value) {
-		console.log(array);
-		console.log(`%c${value}`, "color: yellow; font-weight: bold;");
 		for (let i of array) {
 			if (i.value == value) {
-				console.log(`%cReturned value:`, "font-weight: bold;");
-				console.log(i);
 				return i;
 			}
 		}
@@ -216,7 +224,7 @@ class Difficulty {
 }
 
 class Settings {
-	static defaults = {
+	static defaults = Object.freeze({
 		guess: "color",
 		given: "hex",
 		mode: "timed",
@@ -228,101 +236,51 @@ class Settings {
 		hexCase: "lower",
 		ansDisplay: "0.4",
 		infoDisplay: "4",
-		autoPlay: "off"
-	};
+		autoPlay: "off",
+		newPlayer: "true"
+	});
+	values = { ...Settings.defaults };
 	constructor() {
 		this.read();
-		if (!localStorageAccessable) {
-			this.guess = Settings.defaults.guess;
-			this.given = Settings.defaults.given;
-			this.mode = Settings.defaults.mode;
-			this.difficulty = Settings.defaults.difficulty;
-			this.questions = Settings.defaults.questions;
-			this.mins = Settings.defaults.mins;
-			this.secs = Settings.defaults.secs;
-			this.theme = Settings.defaults.theme;
-			this.hexCase = Settings.defaults.hexCase;
-			this.ansDisplay = Settings.defaults.ansDisplay;
-			this.infoDisplay = Settings.defaults.infoDisplay;
-			this.autoPlay = Settings.defaults.autoPlay;
-		}
-		Utils.getElementByValue(document.forms.guesses.guess, this.guess).click();
-		Utils.getElementByValue(document.forms.givens.given, this.given).click();
-		Utils.getElementByValue(document.forms.modes.gameMode, this.mode).click();
-		Utils.getElementByValue(document.forms.difficulties.difficulty, this.difficulty).click();
-		document.forms.numQuestions.questions.value = this.questions;
-		document.forms.time.minutes.value = this.mins;
-		document.forms.time.seconds.value = this.secs;
-		Utils.getElementByValue(document.forms.themes.theme, this.theme).click();
-		Utils.getElementByValue(document.forms.cases.case, this.hexCase).click();
-		document.forms.ansDisplay.seconds.value = this.ansDisplay;
-		document.forms.infoDisplay.seconds.value = this.infoDisplay;
-		Utils.getElementByValue(document.forms.autoPlay.on, this.autoPlay).click();
+		Utils.getElementByValue(document.forms.guesses.guess, this.values.guess).click();
+		Utils.getElementByValue(document.forms.givens.given, this.values.given).click();
+		Utils.getElementByValue(document.forms.modes.gameMode, this.values.mode).click();
+		Utils.getElementByValue(document.forms.difficulties.difficulty, this.values.difficulty).click();
+		document.forms.numQuestions.questions.value = this.values.questions;
+		document.forms.time.minutes.value = this.values.mins;
+		document.forms.time.seconds.value = this.values.secs;
+		Utils.getElementByValue(document.forms.themes.theme, this.values.theme).click();
+		Utils.getElementByValue(document.forms.cases.case, this.values.hexCase).click();
+		document.forms.ansDisplay.seconds.value = this.values.ansDisplay;
+		document.forms.infoDisplay.seconds.value = this.values.infoDisplay;
+		Utils.getElementByValue(document.forms.autoPlay.on, this.values.autoPlay).click();
 	}
-	/** Store settings in localStorage if localStorage is accessable. */
+	/** Store settings in localStorage if localStorage is accessible. */
 	store() {
-		if (document.forms.ansDisplay.seconds.value != "")
-			this.ansDisplay = document.forms.ansDisplay.seconds.value;
-		else
-			this.ansDisplay = Settings.defaults.ansDisplay;
-		if (document.forms.infoDisplay.seconds.value != "")
-			this.infoDisplay = document.forms.infoDisplay.seconds.value;
-		else
-			this.infoDisplay = Settings.defaults.infoDisplay;
-		if (localStorageAccessable) {
-			localStorage.setItem("guess", this.guess);
-			localStorage.setItem("given", this.given);
-			localStorage.setItem("mode", this.mode);
-			localStorage.setItem("difficulty", this.difficulty);
-			localStorage.setItem("questions", this.questions);
-			localStorage.setItem("mins", this.mins);
-			localStorage.setItem("secs", this.secs);
-			localStorage.setItem("theme", this.theme);
-			localStorage.setItem("hexCase", this.hexCase);
-			localStorage.setItem("ansDisplay", this.ansDisplay);
-			localStorage.setItem("infoDisplay", this.infoDisplay);
-			localStorage.setItem("autoPlay", this.autoPlay);
-		}
-	}
-	/** Read settings from localStorage if localStorage is accessable. */
-	read() {
-		if (localStorageAccessable) {
-			this.guess = localStorage.getItem("guess");
-			this.given = localStorage.getItem("given");
-			this.mode = localStorage.getItem("mode");
-			this.difficulty = localStorage.getItem("difficulty");
-			this.questions = localStorage.getItem("questions");
-			this.mins = localStorage.getItem("mins");
-			this.secs = localStorage.getItem("secs");
-			this.theme = localStorage.getItem("theme");
-			this.hexCase = localStorage.getItem("hexCase");
-			this.ansDisplay = localStorage.getItem("ansDisplay");
-			this.infoDisplay = localStorage.getItem("infoDisplay");
-			this.autoPlay = localStorage.getItem("autoPlay");
-			for (let i in this) {
-				if (this[i] == null || this[i] == undefined)
-					this[i] = Settings.defaults[i];
+		if (localStorageAccessible) {
+			for (let i in this.values) {
+				localStorage.setItem(`${LOCALSTORAGE_PREFIX}-${i}`, this.values[i]);
 			}
 		}
 	}
-	/** Remove all settings from localStorage if localStorage is accessable and reset game settings  */
-	reset() {
-		if (localStorageAccessable) {
-			localStorage.removeItem("guess");
-			localStorage.removeItem("given");
-			localStorage.removeItem("mode");
-			localStorage.removeItem("difficulty");
-			localStorage.removeItem("questions");
-			localStorage.removeItem("mins");
-			localStorage.removeItem("secs");
-			localStorage.removeItem("theme");
-			localStorage.removeItem("hexCase");
-			localStorage.removeItem("ansDisplay");
-			localStorage.removeItem("infoDisplay");
-			localStorage.removeItem("autoPlay");
+	/** Read settings from localStorage if localStorage is accessible. */
+	read() {
+		if (localStorageAccessible) {
+			for (let i in this.values) {
+				let temp = localStorage.getItem(`${LOCALSTORAGE_PREFIX}-${i}`);
+				if (temp != null)
+					this.values[i] = temp;
+			}
 		}
-		for (let i in this)
-			this[i] = Settings.defaults[i];
+	}
+	/** Remove all settings from localStorage if localStorage is accessible and reset game settings  */
+	reset() {
+		if (localStorageAccessible) {
+			for (let i in Settings.values) {
+				localStorage.removeItem(`${LOCALSTORAGE_PREFIX}-${i}`);
+			}
+		}
+		this.values = { ...Settings.defaults };
 	}
 }
 
@@ -376,11 +334,11 @@ class Game {
 	/**Call the next question and set all the relevant html elements to their required values */
 	nextQuestion() {
 		this.color = new Color(Utils.genRgb());
-		if (this.settings.hexCase == "lower")
+		if (this.settings.values.hexCase == "lower")
 			this.color.hex = this.color.hex.toLowerCase();
 		this.ansPos = Utils.randInt(1, 9);
-		if (this.settings.given != "color")
-			guessBoxEl.textContent = this.color[this.settings.given];
+		if (this.settings.values.given != "color")
+			guessBoxEl.textContent = this.color[this.settings.values.given];
 		else {
 			guessBoxEl.textContent = "";
 			guessBoxEl.style["background"] = this.color.rgb;
@@ -388,16 +346,16 @@ class Game {
 		for (let i = 0; i < options.length; ++i) {
 			options[i].removeAttribute("style");
 			options[i].textContent = "";
-			if (this.settings.guess != "color") {
+			if (this.settings.values.guess != "color") {
 				let btnColor;
 				if (i + 1 != this.ansPos) {
 					btnColor = new Color(this.difficulty.option(this.color));
-					if (this.settings.hexCase == "lower")
+					if (this.settings.values.hexCase == "lower")
 						btnColor.hex = btnColor.hex.toLowerCase();
 				}
 				else
 					btnColor = this.color;
-				options[i].textContent = btnColor[this.settings.guess];
+				options[i].textContent = btnColor[this.settings.values.guess];
 			} else {
 				options[i].style["background"] = i + 1 != this.ansPos ? new Color(this.difficulty.option(this.color)).rgb : this.color.rgb;
 			}
@@ -408,32 +366,32 @@ class Game {
 		this.right = 0;
 		this.wrong = 0;
 		this.updateScore();
-		this.settings.mode = document.forms.modes.gameMode.value;
-		document.querySelector("#info-mode").textContent = "Mode: " + this.settings.mode;
-		this.settings.difficulty = document.forms.difficulties.difficulty.value;
-		document.querySelector("#info-difficulty").textContent = "Difficulty: " + ((this.settings.difficulty < Difficulty.max) ? this.settings.difficulty : "max");
-		if (this.difficulty == undefined || this.settings.difficulty != this.difficulty.difficulty)
-			this.difficulty = new Difficulty(this.settings.difficulty);
-		this.settings.questions = document.forms.numQuestions.questions.value;
+		this.settings.values.mode = document.forms.modes.gameMode.value;
+		document.querySelector("#info-mode").textContent = "Mode: " + this.settings.values.mode;
+		this.settings.values.difficulty = document.forms.difficulties.difficulty.value;
+		document.querySelector("#info-difficulty").textContent = "Difficulty: " + ((this.settings.values.difficulty < Difficulty.max) ? this.settings.values.difficulty : "max");
+		if (this.difficulty == undefined || this.settings.values.difficulty != this.difficulty.difficulty)
+			this.difficulty = new Difficulty(this.settings.values.difficulty);
+		this.settings.values.questions = document.forms.numQuestions.questions.value;
 
-		this.settings.mins = document.forms.time.minutes.value;
-		this.settings.secs = document.forms.time.seconds.value;
-		if (this.settings.mins === 0 && this.settings.secs === 0) this.settings.mins = this.settings.defaults.mins;
-		if (this.settings.mins == "") this.settings.mins = "0";
-		if (this.settings.secs == "") this.settings.secs = "0";
+		this.settings.values.mins = document.forms.time.minutes.value;
+		this.settings.values.secs = document.forms.time.seconds.value;
+		if (this.settings.values.mins === 0 && this.settings.secs === 0) this.settings.values.mins = this.settings.defaults.mins;
+		if (this.settings.values.mins == "") this.settings.values.mins = "0";
+		if (this.settings.values.secs == "") this.settings.values.secs = "0";
 
 		this.counter = [0, 0];
 		this.time = [0, 0, 0];
-		this.initialTime = [this.settings.mins, this.settings.secs];
-		if (this.settings.mode == "speed") {
-			this.time = [this.settings.mins, this.settings.secs, 0];
+		this.initialTime = [this.settings.values.mins, this.settings.values.secs];
+		if (this.settings.values.mode == "speed") {
+			this.time = [this.settings.values.mins, this.settings.values.secs, 0];
 			this.counter[1] = " ∞";
 		}
-		else if (this.settings.mode == "timed") {
-			this.counter[1] = this.settings.questions;
+		else if (this.settings.values.mode == "timed") {
+			this.counter[1] = this.settings.values.questions;
 		}
-		else if (this.settings.mode == "zen") {
-			this.counter[1] = this.settings.questions;
+		else if (this.settings.values.mode == "zen") {
+			this.counter[1] = this.settings.values.questions;
 		}
 		else {
 			this.counter[1] = " ∞";
@@ -454,7 +412,7 @@ class Game {
 		if (!this.gameReset)
 			this.reset();
 		document.querySelector("#timer-start").classList.add("flipped");
-		switch (this.settings.mode) {
+		switch (this.settings.values.mode) {
 			case "speed":
 				this.timer = setInterval(() => {
 					this.updateTime("-");
@@ -480,17 +438,17 @@ class Game {
 	}
 	finish() {
 		this.end();
-		switch (this.settings.mode) {
+		switch (this.settings.values.mode) {
 			case "speed":
 				Utils.endModal(`In ${Number(this.initialTime[0])}m ${Number(this.initialTime[1])}.${this.time[2]}s you answered ${this.counter[0]} questions, out of which you got:`, this.right, this.wrong);
 				break;
 
 			case "timed":
-				Utils.endModal(`It took you ${this.time[0]}m ${this.time[1]}.${this.time[2]}s to answer ${this.settings.questions} questions, out of which you got:`, this.right, this.wrong);
+				Utils.endModal(`It took you ${this.time[0]}m ${this.time[1]}.${this.time[2]}s to answer ${this.settings.values.questions} questions, out of which you got:`, this.right, this.wrong);
 				break;
 
 			case "zen":
-				Utils.endModal(`You answered ${this.settings.questions} questions, out of which you got:`, this.right, this.wrong);
+				Utils.endModal(`You answered ${this.settings.values.questions} questions, out of which you got:`, this.right, this.wrong);
 				break;
 		}
 		this.disabledModal = true;
@@ -663,12 +621,12 @@ class Color {
 	/** The function triggered when one of the guess options is selected */
 	function chooseGuess(event) {
 		if (game != undefined) {
-			if (event.target.value == game.settings.given) {
-				document.forms.givens.given.value = game.settings.guess;
-				game.settings.given = game.settings.guess;
-				document.querySelector("#info-given").textContent = game.settings.guess;
+			if (event.target.value == game.settings.values.given) {
+				document.forms.givens.given.value = game.settings.values.guess;
+				game.settings.values.given = game.settings.values.guess;
+				document.querySelector("#info-given").textContent = game.settings.values.guess;
 			}
-			game.settings.guess = event.target.value;
+			game.settings.values.guess = event.target.value;
 		}
 		Utils.updateTitle(event.target.value);
 		document.querySelector("#info-guess").textContent = event.target.value;
@@ -681,12 +639,13 @@ class Color {
 	/** The function triggered when one of the given options is selected */
 	function chooseGiven(event) {
 		if (game != undefined) {
-			if (event.target.value == game.settings.guess) {
-				document.forms.guesses.guess.value = game.settings.given;
-				game.settings.guess = game.settings.given;
-				document.querySelector("#info-guess").textContent = game.settings.given;
+			if (event.target.value == game.settings.values.guess) {
+				document.forms.guesses.guess.value = game.settings.values.given;
+				game.settings.values.guess = game.settings.values.given;
+				document.querySelector("#info-guess").textContent = game.settings.values.given;
+				Utils.updateTitle(game.settings.values.given);
 			}
-			game.settings.given = event.target.value;
+			game.settings.values.given = event.target.value;
 		}
 		document.querySelector("#info-given").textContent = event.target.value;
 	}
@@ -724,13 +683,13 @@ class Color {
 
 	/** The function that runs when one of the theme options is selected */
 	function setTheme(event) {
-		if (game != undefined && game.settings.theme != event.target.value) {
+		if (game != undefined && game.settings.values.theme != event.target.value) {
 			root.classList.add("trans-all");
 			setTimeout(() => { root.classList.remove("trans-all"); }, 500);
 		}
 		root.setAttribute("theme", event.target.value);
 		if (game != undefined)
-			game.settings.theme = event.target.value;
+			game.settings.values.theme = event.target.value;
 	}
 	// Add event listeners to theme radio buttons
 	for (let i of document.forms.themes.elements) {
@@ -750,7 +709,7 @@ class Color {
 	/** The function that runs when one of the Hexadecimal case options is selected */
 	function setHexCase(event) {
 		if (game != undefined)
-			settings.hexCase = event.target.value;
+			settings.values.hexCase = event.target.value;
 	}
 	// Add event listeners to hexCase radio buttons
 	for (let i of document.forms.cases.elements) {
@@ -813,13 +772,13 @@ class Color {
 		game.updateCounter();
 		for (let i of options) {
 			i.disabled = true;
-			if (game.settings.guess != "color")
+			if (game.settings.values.guess != "color")
 				i.style["background"] = i.textContent;
 			else guessBoxEl.style["background"] = guessBoxEl.textContent;
 		}
 		setTimeout(() => {
 			for (let i of options) {
-				if (game.settings.guess != "color")
+				if (game.settings.values.guess != "color")
 					i.removeAttribute("style");
 				else guessBoxEl.removeAttribute("style");
 				i.classList.remove("wrong");
@@ -833,7 +792,7 @@ class Color {
 			else {
 				game.finish();
 			}
-		}, settings.ansDisplay * 1000);
+		}, settings.values.ansDisplay * 1000);
 	}
 	// Add event listeners to option buttons
 	for (let i of options) {
@@ -845,9 +804,11 @@ class Color {
 	var game = new Game(settings);
 
 	// --------------------------------------- Welcome Modal --------------------------------------
-	if (localStorageAccessable) {
-		if (localStorage.getItem("new") != "false") {
-			localStorage.setItem("new", "false");
+	if (localStorageAccessible) {
+		if (settings.values.newPlayer != "false") {
+			console.log(settings.values.newPlayer);
+			settings.values.newPlayer = "false";
+			settings.store();
 			document.querySelector("#modal").classList.remove("hidden");
 		}
 	} else {
