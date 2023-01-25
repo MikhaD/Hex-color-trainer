@@ -1,5 +1,5 @@
 // ------------------------------------------- Variables ------------------------------------------
-const LOCALSTORAGE_PREFIX = "cg";
+const LOCAL_STORAGE_PREFIX = "cg";
 const root = document.documentElement;
 const options = document.querySelector("#options").children;
 const guessBoxEl = document.querySelector("#guess-box");
@@ -259,7 +259,7 @@ class Settings {
 	store() {
 		if (localStorageAccessible) {
 			for (let i in this.values) {
-				localStorage.setItem(`${LOCALSTORAGE_PREFIX}-${i}`, this.values[i]);
+				localStorage.setItem(`${LOCAL_STORAGE_PREFIX}-${i}`, this.values[i]);
 			}
 		}
 	}
@@ -267,7 +267,7 @@ class Settings {
 	read() {
 		if (localStorageAccessible) {
 			for (let i in this.values) {
-				let temp = localStorage.getItem(`${LOCALSTORAGE_PREFIX}-${i}`);
+				let temp = localStorage.getItem(`${LOCAL_STORAGE_PREFIX}-${i}`);
 				if (temp != null)
 					this.values[i] = temp;
 			}
@@ -277,18 +277,19 @@ class Settings {
 	reset() {
 		if (localStorageAccessible) {
 			for (let i in Settings.values) {
-				localStorage.removeItem(`${LOCALSTORAGE_PREFIX}-${i}`);
+				localStorage.removeItem(`${LOCAL_STORAGE_PREFIX}-${i}`);
 			}
 		}
 		this.values = { ...Settings.defaults };
 	}
 }
 
-/**
- * @param settings - A settings object.
- */
 class Game {
+	/**
+	 * @param {Settings} settings - A settings object.
+	 */
 	constructor(settings) {
+		/** @type {Settings} */
 		this.settings = settings;
 		this.difficulty;
 		this.timer;
@@ -748,7 +749,7 @@ class Color {
 					}
 				}
 			};
-		})(), settings.ansDisplay * 1000);
+		})(), game.settings.values.ansDisplay * 1000);
 	});
 
 	// Add event listener to start button
@@ -792,7 +793,7 @@ class Color {
 			else {
 				game.finish();
 			}
-		}, settings.values.ansDisplay * 1000);
+		}, game.settings.values.ansDisplay * 1000);
 	}
 	// Add event listeners to option buttons
 	for (let i of options) {

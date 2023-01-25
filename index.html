@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,203 +12,213 @@
 	<script src="./tutorial/tutorial.js" defer></script> -->
 	<title>GUESS THE HEX</title>
 </head>
-	<body>
+
+<body>
+	<header>
+		<h1 class="text rainbow">guess the <span class="guess"></span></h1>
+		<label for="settings-check">
+			<input id="settings-check" type="checkbox">
+			<svg id="settings-cog" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 131 131"
+				tabindex="0">
+				<path class="cog" fill-rule="evenodd"
+					d="M130.648 75.312v-20l-16.6-2.552c-1.176-4.55-2.977-8.85-5.306-12.8l9.928-13.538-14.14-14.142L91 22.207a49.7 49.7 0 0 0-12.8-5.306L75.648.312h-20L53.096 16.9a49.7 49.7 0 0 0-12.801 5.306L26.757 12.28 12.615 26.42l9.928 13.538a49.63 49.63 0 0 0-5.306 12.8L.648 55.312v20l16.6 2.552c1.177 4.55 2.978 8.85 5.306 12.8l-9.928 13.538 14.142 14.142 13.538-9.928a49.63 49.63 0 0 0 12.8 5.306l2.552 16.6h20l2.552-16.6c4.55-1.176 8.85-2.977 12.8-5.306l13.54 9.928 14.142-14.142-9.928-13.538a49.68 49.68 0 0 0 5.306-12.8l16.6-2.552zm-95-10c0 16.57 13.432 30 30 30s30-13.43 30-30-13.43-30-30-30-30 13.43-30 30z"
+					fill="#000" />
+			</svg>
+		</label>
+	</header>
+	<aside id="settings-drawer" open="false">
 		<header>
-			<h1 class="text rainbow">guess the <span class="guess"></span></h1>
-			<label for="settings-check">
-				<input id="settings-check" type="checkbox">
-				<svg id="settings-cog" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 131 131" tabindex="0">
-					<path class="cog" fill-rule="evenodd" d="M130.648 75.312v-20l-16.6-2.552c-1.176-4.55-2.977-8.85-5.306-12.8l9.928-13.538-14.14-14.142L91 22.207a49.7 49.7 0 0 0-12.8-5.306L75.648.312h-20L53.096 16.9a49.7 49.7 0 0 0-12.801 5.306L26.757 12.28 12.615 26.42l9.928 13.538a49.63 49.63 0 0 0-5.306 12.8L.648 55.312v20l16.6 2.552c1.177 4.55 2.978 8.85 5.306 12.8l-9.928 13.538 14.142 14.142 13.538-9.928a49.63 49.63 0 0 0 12.8 5.306l2.552 16.6h20l2.552-16.6c4.55-1.176 8.85-2.977 12.8-5.306l13.54 9.928 14.142-14.142-9.928-13.538a49.68 49.68 0 0 0 5.306-12.8l16.6-2.552zm-95-10c0 16.57 13.432 30 30 30s30-13.43 30-30-13.43-30-30-30-30 13.43-30 30z" fill="#000"/>
-				</svg>
-			</label>
+			<h1 class="text">settings</h1>
+			<svg id="close-settings" width="22" height="22" viewBox="0 0 22 22" fill="none"
+				xmlns="http://www.w3.org/2000/svg">
+				<path d="M2.18426 2.55542L19.8619 20.2331M19.8619 2.55542L2.1842 20.2331" stroke-width="5" />
+			</svg>
 		</header>
-		<aside id="settings-drawer" open="false">
-			<header>
-				<h1 class="text">settings</h1>
-				<svg id="close-settings" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path d="M2.18426 2.55542L19.8619 20.2331M19.8619 2.55542L2.1842 20.2331" stroke-width="5"/>
-				</svg>
-			</header>
-			<section id="settings">
-				<section id="main-settings">
-					<section class="setting">
-						<h3 class="text">guess</h3>
-						<form class="setting-options" name="guesses">
-							<input type="radio" name="guess" id="guess-hex" value="hex">
-							<label class="setting-option guess" for="guess-hex">HEX</label>
-							<input type="radio" name="guess" id="guess-rgb" value="rgb">
-							<label class="setting-option guess" for="guess-rgb">RGB</label>
-							<input type="radio" name="guess" id="guess-hsl" value="hsl">
-							<label class="setting-option guess" for="guess-hsl">HSL</label>
-							<input type="radio" name="guess" id="guess-color" value="color">
-							<label class="setting-option guess" for="guess-color">COLOR</label>
-						</form>
-					</section>
-					<section class="setting">
-						<h3 class="text">given</h3>
-						<form class="setting-options" name="givens">
-							<input type="radio" name="given" id="given-hex" value="hex">
-							<label class="setting-option given" for="given-hex">HEX</label>
-							<input type="radio" name="given" id="given-rgb" value="rgb">
-							<label class="setting-option given" for="given-rgb">RGB</label>
-							<input type="radio" name="given" id="given-hsl" value="hsl">
-							<label class="setting-option given" for="given-hsl">HSL</label>
-							<input type="radio" name="given" id="given-color" value="color">
-							<label class="setting-option given" for="given-color">COLOR</label>
-						</form>
-					</section>
-					<section class="setting">
-						<h3 class="text">game mode</h3>
-						<form class="setting-options" name="modes">
-							<input type="radio" name="gameMode" id="speed" value="speed">
-							<label class="setting-option" for="speed">Speed</label>
-							<input type="radio" name="gameMode" id="timed" value="timed">
-							<label class="setting-option" for="timed">Timed</label>
-							<input type="radio" name="gameMode" id="zen" value="zen">
-							<label class="setting-option" for="zen">Zen</label>
-							<input type="radio" name="gameMode" id="endless" value="endless">
-							<label class="setting-option" for="endless">Endless</label>
-						</form>
-					</section>
-					<section class="setting">
-						<h3 class="text">difficulty</h3>
-						<form class="setting-options" name="difficulties">
-							<input type="radio" name="difficulty" id="1" value="1">
-							<label class="setting-option" for="1">1</label>
-							<input type="radio" name="difficulty" id="2" value="2">
-							<label class="setting-option" for="2">2</label>
-							<input type="radio" name="difficulty" id="3" value="3">
-							<label class="setting-option" for="3">3</label>
-							<input type="radio" name="difficulty" id="4" value="4">
-							<label class="setting-option" for="4">4</label>
-							<input type="radio" name="difficulty" id="5" value="5">
-							<label class="setting-option" for="5">5</label>
-							<input type="radio" name="difficulty" id="6" value="6">
-							<label class="setting-option" for="6">6</label>
-						</form>
-					</section>
-					<section class="setting hidden" id="time">
-						<h3 class="text">time</h3>
-						<form class="setting-options" name="time">
-							<input type="number" name="minutes" class="text input" placeholder="minutes" max="10" min="0">
-							<input type="number" name="seconds" class="text input" placeholder="seconds" max="59" min="0">
-						</form>
-					</section>
-					<section class="setting" id="questions">
-						<h3 class="text">questions</h3>
-						<form name="numQuestions">
-							<input type="number" name="questions" class="text input" placeholder="questions" max="999" min="1">
-						</form>
-					</section>
+		<section id="settings">
+			<section id="main-settings">
+				<section class="setting">
+					<h3 class="text">guess</h3>
+					<form class="setting-options" name="guesses">
+						<input type="radio" name="guess" id="guess-hex" value="hex">
+						<label class="setting-option guess" for="guess-hex">HEX</label>
+						<input type="radio" name="guess" id="guess-rgb" value="rgb">
+						<label class="setting-option guess" for="guess-rgb">RGB</label>
+						<input type="radio" name="guess" id="guess-hsl" value="hsl">
+						<label class="setting-option guess" for="guess-hsl">HSL</label>
+						<input type="radio" name="guess" id="guess-color" value="color">
+						<label class="setting-option guess" for="guess-color">COLOR</label>
+					</form>
 				</section>
-				<section id="advanced-settings-drawer"  open="false">
-					<section class="setting" id="themes">
-						<h3 class="text">color theme</h3>
-						<form class="setting-options" name="themes">
-							<input type="radio" name="theme" id="light" value="light">
-							<label class="setting-option" for="light">Light</label>
-							<input type="radio" name="theme" id="dark" value="dark">
-							<label class="setting-option" for="dark">Dark</label>
+				<section class="setting">
+					<h3 class="text">given</h3>
+					<form class="setting-options" name="givens">
+						<input type="radio" name="given" id="given-hex" value="hex">
+						<label class="setting-option given" for="given-hex">HEX</label>
+						<input type="radio" name="given" id="given-rgb" value="rgb">
+						<label class="setting-option given" for="given-rgb">RGB</label>
+						<input type="radio" name="given" id="given-hsl" value="hsl">
+						<label class="setting-option given" for="given-hsl">HSL</label>
+						<input type="radio" name="given" id="given-color" value="color">
+						<label class="setting-option given" for="given-color">COLOR</label>
+					</form>
+				</section>
+				<section class="setting">
+					<h3 class="text">game mode</h3>
+					<form class="setting-options" name="modes">
+						<input type="radio" name="gameMode" id="speed" value="speed">
+						<label class="setting-option" for="speed">Speed</label>
+						<input type="radio" name="gameMode" id="timed" value="timed">
+						<label class="setting-option" for="timed">Timed</label>
+						<input type="radio" name="gameMode" id="zen" value="zen">
+						<label class="setting-option" for="zen">Zen</label>
+						<input type="radio" name="gameMode" id="endless" value="endless">
+						<label class="setting-option" for="endless">Endless</label>
+					</form>
+				</section>
+				<section class="setting">
+					<h3 class="text">difficulty</h3>
+					<form class="setting-options" name="difficulties">
+						<input type="radio" name="difficulty" id="1" value="1">
+						<label class="setting-option" for="1">1</label>
+						<input type="radio" name="difficulty" id="2" value="2">
+						<label class="setting-option" for="2">2</label>
+						<input type="radio" name="difficulty" id="3" value="3">
+						<label class="setting-option" for="3">3</label>
+						<input type="radio" name="difficulty" id="4" value="4">
+						<label class="setting-option" for="4">4</label>
+						<input type="radio" name="difficulty" id="5" value="5">
+						<label class="setting-option" for="5">5</label>
+						<input type="radio" name="difficulty" id="6" value="6">
+						<label class="setting-option" for="6">6</label>
+					</form>
+				</section>
+				<section class="setting hidden" id="time">
+					<h3 class="text">time</h3>
+					<form class="setting-options" name="time">
+						<input type="number" name="minutes" class="text input" placeholder="minutes" max="10" min="0">
+						<input type="number" name="seconds" class="text input" placeholder="seconds" max="59" min="0">
+					</form>
+				</section>
+				<section class="setting" id="questions">
+					<h3 class="text">questions</h3>
+					<form name="numQuestions">
+						<input type="number" name="questions" class="text input" placeholder="questions" max="999"
+							min="1">
+					</form>
+				</section>
+			</section>
+			<section id="advanced-settings-drawer" open="false">
+				<section class="setting" id="themes">
+					<h3 class="text">color theme</h3>
+					<form class="setting-options" name="themes">
+						<input type="radio" name="theme" id="light" value="light">
+						<label class="setting-option" for="light">Light</label>
+						<input type="radio" name="theme" id="dark" value="dark">
+						<label class="setting-option" for="dark">Dark</label>
+					</form>
+				</section>
+				<h2 class="text" id="advanced-settings-button">advanced settings
+					<svg width="20" height="16" viewBox="-5 -2 22 18">
+						<path d="M0.943604 15.6946V0.69458L13.934 8.19458L0.943604 15.6946Z" />
+					</svg>
+				</h2>
+				<section id="advanced-settings">
+					<section class="setting" id="cases">
+						<h3 class="text">hexadecimal case</h3>
+						<form class="setting-options" name="cases">
+							<input type="radio" name="case" id="lower" value="lower">
+							<label class="setting-option" for="lower">Lower</label>
+							<input type="radio" name="case" id="upper" value="upper">
+							<label class="setting-option" for="upper">Upper</label>
 						</form>
 					</section>
-					<h2 class="text" id="advanced-settings-button">advanced settings
-						<svg width="20" height="16" viewBox="-5 -2 22 18">
-							<path d="M0.943604 15.6946V0.69458L13.934 8.19458L0.943604 15.6946Z"/>
-						</svg>
-					</h2>
-					<section id="advanced-settings">
-						<section class="setting" id="cases">
-							<h3 class="text">hexadecimal case</h3>
-							<form class="setting-options" name="cases">
-								<input type="radio" name="case" id="lower" value="lower">
-								<label class="setting-option" for="lower">Lower</label>
-								<input type="radio" name="case" id="upper" value="upper">
-								<label class="setting-option" for="upper">Upper</label>
-							</form>
-						</section>
-						<section class="setting" id="ansDisplay">
-							<h3 class="text">answer display period</h3>
-							<form class="setting-options" name="ansDisplay">
-								<input type="number" name="seconds" class="text input" placeholder="seconds" max="1" min="0" step="0.1">
-							</form>
-						</section>
-						<section class="setting" id="infoDisplay">
-							<h3 class="text">info display period</h3>
-							<form class="setting-options" name="infoDisplay">
-								<input type="number" name="seconds" class="text input" placeholder="seconds" max="30" min="1">
-							</form>
-						</section>
-						<section class="setting" id="autoPlay">
-							<h3 class="text">auto play</h3>
-							<form class="setting-options" name="autoPlay">
-								<input type="radio" name="on" id="off" value="off">
-								<label class="setting-option" for="off">Off</label>
-								<input type="radio" name="on" id="on" value="on">
-								<label class="setting-option" for="on">On</label>
-							</form>
-						</section>
-						<section class="setting" name="tutorial">
-							<button class="btn tut-btn">take tutorial</button>
-						</section>
+					<section class="setting" id="ansDisplay">
+						<h3 class="text">answer display period</h3>
+						<form class="setting-options" name="ansDisplay">
+							<input type="number" name="seconds" class="text input" placeholder="seconds" max="2" min="0"
+								step="0.1">
+						</form>
+					</section>
+					<section class="setting" id="infoDisplay">
+						<h3 class="text">info display period</h3>
+						<form class="setting-options" name="infoDisplay">
+							<input type="number" name="seconds" class="text input" placeholder="seconds" max="30"
+								min="1">
+						</form>
+					</section>
+					<section class="setting" id="autoPlay">
+						<h3 class="text">auto play</h3>
+						<form class="setting-options" name="autoPlay">
+							<input type="radio" name="on" id="off" value="off">
+							<label class="setting-option" for="off">Off</label>
+							<input type="radio" name="on" id="on" value="on">
+							<label class="setting-option" for="on">On</label>
+						</form>
+					</section>
+					<section class="setting" name="tutorial">
+						<button class="btn tut-btn">take tutorial</button>
 					</section>
 				</section>
 			</section>
-			<footer>
-				Created by MikhaD
-			</footer>
-		</aside>
-		<main>
-			<section id="controls">
-				<div class="flipper hover">
-					<div class="flipper-sides" id="gb-flip">
-						<div class="flipper-front text" id="guess-box"></div>
-						<div class="flipper-back text" id="info-box">
-							<span class="setting-info" id="info-mode"></span>
-							<div class="setting-info" id="info-gg">
-								<span id="info-guess"></span>
-								<span>/</span>
-								<span id="info-given"></span>
-							</div>
-							<span class="setting-info" id="info-difficulty"></span>
-							<button class="btn info-btn hidden" id="info-reset">reset</button>
-							<button class="btn info-btn hidden" id="info-restart">restart</button>
+		</section>
+		<footer>
+			Created by MikhaD
+		</footer>
+	</aside>
+	<main>
+		<section id="controls">
+			<div class="flipper hover">
+				<div class="flipper-sides" id="gb-flip">
+					<div class="flipper-front text" id="guess-box"></div>
+					<div class="flipper-back text" id="info-box">
+						<span class="setting-info" id="info-mode"></span>
+						<div class="setting-info" id="info-gg">
+							<span id="info-guess"></span>
+							<span>/</span>
+							<span id="info-given"></span>
 						</div>
+						<span class="setting-info" id="info-difficulty"></span>
+						<button class="btn info-btn hidden" id="info-reset">reset</button>
+						<button class="btn info-btn hidden" id="info-restart">restart</button>
 					</div>
 				</div>
-				<div class="flipper" id="timer-start">
-					<div class="flipper-sides">
-						<button class="text btn flipper-front" id="start">start</button>
-						<span class="mono-text flipper-back" id="timer"></span>
-					</div>
-				</div>
-				<div id="progress">
-					<span class="mono-text" id="counter"></span>
-					<span class="mono-text right-box" id="right"></span>
-					<span class="mono-text wrong-box" id="wrong"></span>
-				</div>
-			</section>
-			<section id="options">
-				<button class="text" position="1" disabled></button>
-				<button class="text" position="2" disabled></button>
-				<button class="text" position="3" disabled></button>
-				<button class="text" position="4" disabled></button>
-				<button class="text" position="5" disabled></button>
-				<button class="text" position="6" disabled></button>
-				<button class="text" position="7" disabled></button>
-				<button class="text" position="8" disabled></button>
-				<button class="text" position="9" disabled></button>
-			</section>
-		</main>
-	</body>
-	<div class="hidden" id="modal">
-		<div id="modal-body">
-			<h1 class="text" id="modal-title">welcome!</h1>
-			<div class="text" id="modal-content">
-				<p>I made this game to improve my ability to recognize colors by their hexadecimal values and vice versa.</p>
-				<p>Click on the box above the start button to see your settings mid game.</p>
-				<button class="btn tut-btn">take tutorial</button>
 			</div>
-			<button class="text btn" id="modal-button">close</button>
+			<div class="flipper" id="timer-start">
+				<div class="flipper-sides">
+					<button class="text btn flipper-front" id="start">start</button>
+					<span class="mono-text flipper-back" id="timer"></span>
+				</div>
+			</div>
+			<div id="progress">
+				<span class="mono-text" id="counter"></span>
+				<span class="mono-text right-box" id="right"></span>
+				<span class="mono-text wrong-box" id="wrong"></span>
+			</div>
+		</section>
+		<section id="options">
+			<button class="text" position="1" disabled></button>
+			<button class="text" position="2" disabled></button>
+			<button class="text" position="3" disabled></button>
+			<button class="text" position="4" disabled></button>
+			<button class="text" position="5" disabled></button>
+			<button class="text" position="6" disabled></button>
+			<button class="text" position="7" disabled></button>
+			<button class="text" position="8" disabled></button>
+			<button class="text" position="9" disabled></button>
+		</section>
+	</main>
+</body>
+<div class="hidden" id="modal">
+	<div id="modal-body">
+		<h1 class="text" id="modal-title">welcome!</h1>
+		<div class="text" id="modal-content">
+			<p>I made this game to improve my ability to recognize colors by their hexadecimal values and vice versa.
+			</p>
+			<p>Click on the box above the start button to see your settings mid game.</p>
+			<button class="btn tut-btn">take tutorial</button>
 		</div>
+		<button class="text btn" id="modal-button">close</button>
 	</div>
+</div>
+
 </html>
