@@ -1,4 +1,4 @@
-document.querySelector("#version").textContent = "1.4.1";
+document.querySelector("#version").textContent = "1.4.2";
 // ------------------------------------------- Variables ------------------------------------------
 const LOCAL_STORAGE_PREFIX = "cg";
 const root = document.documentElement;

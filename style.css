@@ -609,6 +609,10 @@ html.trans-all * {
 		margin: 0 2rem 0 2rem
 	}
 
+	footer {
+		padding: 0 2rem 0 2rem
+	}
+
 	#modal-body {
 		grid-template-rows: 1fr 6fr 2fr;
 		width: 80%;
