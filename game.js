@@ -1,3 +1,4 @@
+document.querySelector("#version").textContent = "1.4.1";
 // ------------------------------------------- Variables ------------------------------------------
 const LOCAL_STORAGE_PREFIX = "cg";
 const root = document.documentElement;
@@ -381,6 +382,9 @@ class Game {
 		if (this.settings.values.mins == "") this.settings.values.mins = "0";
 		if (this.settings.values.secs == "") this.settings.values.secs = "0";
 
+		this.settings.values.ansDisplay = document.forms.ansDisplay.seconds.value;
+		this.settings.values.infoDisplay = document.forms.infoDisplay.seconds.value;
+
 		this.counter = [0, 0];
 		this.time = [0, 0, 0];
 		this.initialTime = [this.settings.values.mins, this.settings.values.secs];
@@ -749,7 +753,7 @@ class Color {
 					}
 				}
 			};
-		})(), game.settings.values.ansDisplay * 1000);
+		})(), settings.values.ansDisplay * 1000);
 	});
 
 	// Add event listener to start button
@@ -793,7 +797,7 @@ class Color {
 			else {
 				game.finish();
 			}
-		}, game.settings.values.ansDisplay * 1000);
+		}, settings.values.ansDisplay * 1000);
 	}
 	// Add event listeners to option buttons
 	for (let i of options) {

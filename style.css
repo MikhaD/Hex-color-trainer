@@ -104,10 +104,11 @@ input[type="radio"] {
 footer {
 	width: 100%;
 	font-size: 1.2rem;
-	font-weight: 500;
 	margin: auto 0 0.5rem 0;
-	text-align: center;
 	color: var(--foreground);
+	padding-inline: 4rem;
+	display: flex;
+	justify-content: space-between;
 }
 
 .mono-text {
